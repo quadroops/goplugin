@@ -1,0 +1,28 @@
+syntax = "proto3";
+package plugin;
+
+import "google/protobuf/empty.proto";
+
+service Plugin {
+    rpc Ping (google.protobuf.Empty) returns (PingResponse);
+    rpc Exec (ExecRequest) returns (ExecResponse);
+}
+
+message Data {
+    string Response = 1;
+}
+
+message PingResponse {
+    string Status = 1;
+    Data Data = 2;
+}
+
+message ExecRequest {
+    string Command = 1;
+    string Payload = 2;
+}
+
+message ExecResponse {
+    string Status = 1;
+    Data Data = 2;
+}
