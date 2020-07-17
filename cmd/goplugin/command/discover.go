@@ -13,6 +13,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// discoverCmd used to fetch all information about current plugin's information
+// including meta, settings, available plugins and hosts
 var discoverCmd = &cobra.Command{
 	Use:   "discover",
 	Short: "Used to discover available plugins",

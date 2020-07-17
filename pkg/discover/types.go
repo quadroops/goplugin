@@ -26,21 +26,21 @@ type PluginInit struct {
 
 // PluginMeta used to save all [meta] informations
 type PluginMeta struct {
-	Version      string
-	Author       string
-	Contributors []string
+	Version      string   `toml:"version"`
+	Author       string   `toml:"author"`
+	Contributors []string `toml:"contributors"`
 }
 
 // PluginSettings used to save all global [settings] informations
 type PluginSettings struct {
-	Debug bool
+	Debug bool `toml:"debug"`
 }
 
 // PluginInfo used to save all plugin's basic informations
 type PluginInfo struct {
-	Author   string
-	MD5      string
-	Exec     string
+	Author   string   `toml:"author"`
+	MD5      string   `toml:"md5"`
+	Exec     string   `toml:"exec"`
 	ExecArgs []string `toml:"exec_args"`
 	ExecFile string   `toml:"exec_file"`
 	ExecTime int      `toml:"exec_time"`
@@ -50,15 +50,15 @@ type PluginInfo struct {
 
 // PluginHost used to save all registered service's plugins
 type PluginHost struct {
-	Plugins []string
+	Plugins []string `toml:"plugins"`
 }
 
 // PluginConfig used to store all plugin configuration values
 type PluginConfig struct {
-	Meta     PluginMeta
-	Settings PluginSettings
-	Plugins  map[string]PluginInfo
-	Hosts    map[string]PluginHost
+	Meta     PluginMeta            `toml:"meta"`
+	Settings PluginSettings        `toml:"settings"`
+	Plugins  map[string]PluginInfo `toml:"plugins"`
+	Hosts    map[string]PluginHost `toml:"hosts"`
 }
 
 // Host used as main host's configurations

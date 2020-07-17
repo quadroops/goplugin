@@ -1,0 +1,11 @@
+[plugin]
+name = "pluginname"
+author = "author|author@email.com"
+md5 = "d194b7bad208c2ddfa0ef597fd4abcc5"
+exec = "/path/to/exec"
+exec_args = ["--port", "8080"]
+exec_file = "/path/to/exec"
+exec_time = 5
+comm_type = "grpc"
+comm_port = "8080"
+hosts = ["host_1", "host_3"]

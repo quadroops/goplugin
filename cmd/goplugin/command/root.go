@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// rootCmd is our main cmd provider
+// rootCmd is our main cmd controller
 var rootCmd = &cobra.Command{
 	Use:   "goplugin",
 	Short: "Goplugin is golang plugin library to manage plugin architecture",
@@ -15,6 +15,7 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(discoverCmd)
+	rootCmd.AddCommand(pluginCmd)
 }
 
 // Execute will provide main cmd application
