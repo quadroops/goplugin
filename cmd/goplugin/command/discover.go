@@ -14,7 +14,7 @@ import (
 )
 
 var discoverCmd = &cobra.Command{
-	Use: "discover",
+	Use:   "discover",
 	Short: "Used to discover available plugins",
 	Run: func(cmd *cobra.Command, args []string) {
 		defer func() {
@@ -24,21 +24,22 @@ var discoverCmd = &cobra.Command{
 		}()
 
 		var filepath string
-		d := discover.NewConfigChecker(driver.NewOsChecker(), driver.NewDefaultChecker())
-		dfile, err := d.Explore()
-		if err != nil {
-			log.Fatalf("Error exploring plugins: %v", err)
-		}
 
 		fileFromArg, err := cmd.Flags().GetString("filepath")
 		if err != nil {
 			log.Fatalf("Error exploring plugins: %v", err)
 		}
 
-		if dfile != fileFromArg && fileFromArg != "" {
-			filepath = fileFromArg
-		} else {
+		if fileFromArg == "" {
+			d := discover.NewConfigChecker(driver.NewOsChecker(), driver.NewDefaultChecker())
+			dfile, err := d.Explore()
+			if err != nil {
+				log.Fatalf("Error exploring plugins: %v", err)
+			}
+
 			filepath = dfile
+		} else {
+			filepath = fileFromArg
 		}
 
 		fileReader := driver.NewFileReader()
@@ -82,7 +83,6 @@ func init() {
 	discoverCmd.Flags().StringP("filepath", "f", "", "Set custom goplugin filepath")
 	discoverCmd.Flags().BoolP("only-plugins", "", false, "Used to show only available plugins")
 	discoverCmd.Flags().BoolP("only-hosts", "", false, "Used to show only available hosts")
-	rootCmd.AddCommand(discoverCmd)
 }
 
 func renderTableMeta(conf *discover.PluginConfig) {
@@ -118,7 +118,7 @@ func renderPlugins(conf *discover.PluginConfig) {
 func renderHosts(conf *discover.PluginConfig) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Name", "Plugins"})
-	
+
 	var data [][]string
 	for name, host := range conf.Hosts {
 		d := []string{name, strings.Join(host.Plugins, ",")}

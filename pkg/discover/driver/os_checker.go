@@ -12,16 +12,16 @@ const (
 	OSEnvName = "GOPLUGIN_DIR"
 )
 
-type osChecker struct {}
+type osChecker struct{}
 
 // NewOsChecker used to create new instance os checker
 func NewOsChecker() discover.Checker {
-	return new(osChecker) 
+	return new(osChecker)
 }
 
 func (c *osChecker) Check() string {
 	val := os.Getenv(OSEnvName)
-	if val != "" {
+	if val != "" && len(val) >= 1 {
 		_, err := os.Stat(val)
 		if os.IsNotExist(err) {
 			panic(fmt.Sprintf("Path is not exist: %s", val))
