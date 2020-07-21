@@ -23,7 +23,7 @@ func createMockPlugin(name string) process.Plugin {
 
 func createMockChanPlugin(plugin process.Plugin) <-chan process.Plugin {
 	c := make(chan process.Plugin)
-	go func () {
+	go func() {
 		c <- plugin
 		close(c)
 	}()
@@ -33,16 +33,16 @@ func createMockChanPlugin(plugin process.Plugin) <-chan process.Plugin {
 
 func TestRunSuccess(t *testing.T) {
 	runner := new(mocks.Runner)
-	runner.On("Run", 1, "test", "test").Once().Return(createMockChanPlugin(createMockPlugin("test")), nil)
+	runner.On("Run", 1, "test", "test", 1001).Once().Return(createMockChanPlugin(createMockPlugin("test")), nil)
 
 	processes := new(mocks.ProcessesBuilder)
 	processes.On("IsExist", "test").Once().Return(false)
 
 	p := process.New(runner, processes)
-	ch, err := p.Run(1, "test", "test")
+	ch, err := p.Run(1, "test", "test", 1001)
 	assert.NoError(t, err)
 
-	plugin := <- ch
+	plugin := <-ch
 	assert.Equal(t, plugin.Name, "test")
 }
 
@@ -52,28 +52,28 @@ func TestRunErrorExist(t *testing.T) {
 	processes.On("IsExist", "test").Once().Return(true)
 
 	p := process.New(runner, processes)
-	_, err := p.Run(1, "test", "test")
+	_, err := p.Run(1, "test", "test", 1001)
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrPluginStarted))
 }
 
 func TestWatchSuccess(t *testing.T) {
 	plugin := createMockPlugin("test")
-	pluginCh := createMockChanPlugin(plugin) 
+	pluginCh := createMockChanPlugin(plugin)
 
 	runner := new(mocks.Runner)
-	runner.On("Run", 1, "test", "test").Once().Return(pluginCh, nil)
+	runner.On("Run", 1, "test", "test", 1001).Once().Return(pluginCh, nil)
 
 	processes := new(mocks.ProcessesBuilder)
 	processes.On("IsExist", "test").Once().Return(false)
 	processes.On("Add", mock.Anything).Once().Return(nil)
 
 	p := process.New(runner, processes)
-	p.Watch(p.Run(1, "test", "test"))
+	p.Watch(p.Run(1, "test", "test", 1001))
 }
 
 func TestKillSuccess(t *testing.T) {
-	plugin := createMockChanPlugin(createMockPlugin("test")) 
+	plugin := createMockChanPlugin(createMockPlugin("test"))
 	pl := <-plugin
 
 	runner := new(mocks.Runner)
@@ -91,7 +91,7 @@ func TestKillError(t *testing.T) {
 	runner := new(mocks.Runner)
 	processes := new(mocks.ProcessesBuilder)
 	processes.On("Get", "test").Once().Return(process.Plugin{}, errs.ErrPluginNotFound)
-	
+
 	p := process.New(runner, processes)
 	err := p.Kill("test")
 	assert.Error(t, err)
@@ -100,7 +100,7 @@ func TestKillError(t *testing.T) {
 func TestKillAllSuccess(t *testing.T) {
 	plugin := createMockPlugin("test")
 	obs := rxgo.Start([]rxgo.Supplier{func(_ context.Context) rxgo.Item {
-		return rxgo.Of(plugin)		
+		return rxgo.Of(plugin)
 	}})
 
 	runner := new(mocks.Runner)

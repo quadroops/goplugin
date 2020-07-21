@@ -8,7 +8,7 @@ var (
 )
 
 // Builder used as a simple function to create Caller instance
-type Builder func(commType, commPort string) Caller
+type Builder func(commType string, port int) Caller
 
 // Caller used as main communication interface
 type Caller interface {

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/caller"
 	discoverDriver "github.com/quadroops/goplugin/pkg/discover/driver"
+	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/executor"
 	"github.com/quadroops/goplugin/pkg/host"
 	"github.com/quadroops/goplugin/pkg/process"
@@ -53,8 +53,7 @@ const (
 		exec = "./tmp/test"
     	exec_file = "./tmp/test"
 		exec_time = 5
-		rpc_type = "grpc"
-		rpc_addr = "8080"
+		protocol_type = "grpc"
 		
 		[plugins.name_2]
 		author = "author_2|author_2@gmail.com"
@@ -62,8 +61,7 @@ const (
 		exec = "./tmp/test"
     	exec_file = "./tmp/test"
 		exec_time = 10
-		rpc_type = "rest"
-		rpc_addr = "8080"
+		protocol_type = "grpc"
 		
 		[plugins.name_3]
 		author = "author_3|author_3@gmail.com"
@@ -71,8 +69,7 @@ const (
 		exec = "./tmp/test"
     	exec_file = "./tmp/test"
 		exec_time = 20
-		rpc_type = "nano"
-		rpc_addr = "8080"
+		protocol_type = "unknown"
 		
 	# Used as service registries
 	# A service is an application that consume / using plugins
@@ -100,7 +97,7 @@ func createMockPlugin(name string) process.Plugin {
 
 func createMockChanPlugin(plugin process.Plugin) <-chan process.Plugin {
 	c := make(chan process.Plugin)
-	go func () {
+	go func() {
 		c <- plugin
 		close(c)
 	}()
@@ -117,7 +114,7 @@ func TestRegisterSuccess(t *testing.T) {
 	md5 := new(hostMock.MD5Checker)
 	h := host.New("host_1", toml, md5)
 	assert.NotNil(t, h)
-	
+
 	runner := new(processMock.Runner)
 	processes := new(processMock.ProcessesBuilder)
 	p := process.New(runner, processes)
@@ -130,12 +127,12 @@ func TestRegisterSuccess(t *testing.T) {
 func TestExecNewSuccess(t *testing.T) {
 	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
 	assert.NoError(t, err)
-	
+
 	md5 := new(hostMock.MD5Checker)
 	h := host.New("host_1", toml, md5)
 	h2 := host.New("host_2", toml, md5)
 	h3 := host.New("host_3", toml, md5)
-	
+
 	runner := new(processMock.Runner)
 	processes := new(processMock.ProcessesBuilder)
 	p := process.New(runner, processes)
@@ -159,20 +156,20 @@ func TestExecEmpty(t *testing.T) {
 func TestExecFromHostSuccess(t *testing.T) {
 	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
 	assert.NoError(t, err)
-	
+
 	md5 := new(hostMock.MD5Checker)
 	md5.On("Parse", mock.Anything).Return("d41d8cd98f00b204e9800998ecf8427e", nil)
 
 	h := host.New("host_1", toml, md5)
 	h2 := host.New("host_2", toml, md5)
 	h3 := host.New("host_3", toml, md5)
-	
+
 	runner := new(processMock.Runner)
 	processes := new(processMock.ProcessesBuilder)
 	p := process.New(runner, processes)
 	p2 := process.New(runner, processes)
 	p3 := process.New(runner, processes)
-	
+
 	exec := executor.New(
 		executor.Register(h, p),
 		executor.Register(h2, p2),
@@ -183,11 +180,11 @@ func TestExecFromHostSuccess(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, container1.IsInstalled())
 	assert.Equal(t, 3, container1.PluginLength())
-	
+
 	_, err = exec.FromHost("host_2")
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrNoPlugins))
-	
+
 	container3, err := exec.FromHost("host_3")
 	assert.NoError(t, err)
 	assert.True(t, container3.IsInstalled())
@@ -197,7 +194,7 @@ func TestExecFromHostSuccess(t *testing.T) {
 func TestRunSuccess(t *testing.T) {
 	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
 	assert.NoError(t, err)
-	
+
 	md5 := new(hostMock.MD5Checker)
 	md5.On("Parse", mock.Anything).Return("d41d8cd98f00b204e9800998ecf8427e", nil)
 
@@ -205,47 +202,47 @@ func TestRunSuccess(t *testing.T) {
 
 	mockPlugin := createMockPlugin("test")
 	runner := new(processMock.Runner)
-	runner.On("Run", 5, "name_1", "./tmp/test").Once().Return(createMockChanPlugin(mockPlugin), nil)
-	
+	runner.On("Run", 5, "name_1", "./tmp/test", 1001).Once().Return(createMockChanPlugin(mockPlugin), nil)
+
 	processes := new(processMock.ProcessesBuilder)
 	processes.On("IsExist", "name_1").Once().Return(false)
 	processes.On("Add", mock.Anything).Once().Return(nil)
 
 	p := process.New(runner, processes)
-	
+
 	exec := executor.New(
 		executor.Register(h, p),
 	)
-	
+
 	container1, err := exec.FromHost("host_1")
 	assert.NoError(t, err)
-	
-	err = container1.Run("name_1")
-	assert.NoError(t, err)	
+
+	err = container1.Run("name_1", 1001)
+	assert.NoError(t, err)
 }
 
 func TestRunNoPlugin(t *testing.T) {
 	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
 	assert.NoError(t, err)
-	
+
 	md5 := new(hostMock.MD5Checker)
 	md5.On("Parse", mock.Anything).Return("d41d8cd98f00b204e9800998ecf8427e", nil)
 
 	h := host.New("host_1", toml, md5)
 
-	runner := new(processMock.Runner)	
+	runner := new(processMock.Runner)
 	processes := new(processMock.ProcessesBuilder)
 
 	p := process.New(runner, processes)
-	
+
 	exec := executor.New(
 		executor.Register(h, p),
 	)
-	
+
 	container1, err := exec.FromHost("host_1")
 	assert.NoError(t, err)
 
-	err = container1.Run("unknown")
+	err = container1.Run("unknown", 1001)
 	assert.Error(t, err)
 	assert.True(t, errors.Is(errs.ErrPluginNotFound, err))
 }
@@ -254,15 +251,15 @@ func TestGetPluginSuccess(t *testing.T) {
 	mockCaller := new(callerMock.Caller)
 	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
 	assert.NoError(t, err)
-	
+
 	md5 := new(hostMock.MD5Checker)
 	md5.On("Parse", mock.Anything).Return("d41d8cd98f00b204e9800998ecf8427e", nil)
 
-	h := host.New("host_1", toml, md5)	
+	h := host.New("host_1", toml, md5)
 	runner := new(processMock.Runner)
 	processes := new(processMock.ProcessesBuilder)
 	p := process.New(runner, processes)
-	
+
 	exec := executor.New(
 		executor.Register(h, p),
 	)
@@ -270,30 +267,29 @@ func TestGetPluginSuccess(t *testing.T) {
 	container, err := exec.FromHost("host_1")
 	assert.NoError(t, err)
 	assert.True(t, container.IsInstalled())
-	assert.Equal(t, 3, container.PluginLength())	
+	assert.Equal(t, 3, container.PluginLength())
 
-	transporter, err := container.Get("name_1", func(rpcType, rpcAddr string) caller.Caller {
-		return mockCaller		
+	transporter, err := container.Get("name_1", 1001, func(rpcType string, port int) caller.Caller {
+		return mockCaller
 	})
 
 	assert.NoError(t, err)
-	assert.Equal(t, "grpc", transporter.Meta.RPCType)
-	assert.Equal(t, "8080", transporter.Meta.RPCPort)
+	assert.Equal(t, "grpc", transporter.Meta.ProtocolType)
 }
 
 func TestGetPluginNotFound(t *testing.T) {
 	mockCaller := new(callerMock.Caller)
 	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
 	assert.NoError(t, err)
-	
+
 	md5 := new(hostMock.MD5Checker)
 	md5.On("Parse", mock.Anything).Return("d41d8cd98f00b204e9800998ecf8427e", nil)
 
-	h := host.New("host_1", toml, md5)	
+	h := host.New("host_1", toml, md5)
 	runner := new(processMock.Runner)
 	processes := new(processMock.ProcessesBuilder)
 	p := process.New(runner, processes)
-	
+
 	exec := executor.New(
 		executor.Register(h, p),
 	)
@@ -301,10 +297,10 @@ func TestGetPluginNotFound(t *testing.T) {
 	container, err := exec.FromHost("host_1")
 	assert.NoError(t, err)
 	assert.True(t, container.IsInstalled())
-	assert.Equal(t, 3, container.PluginLength())	
+	assert.Equal(t, 3, container.PluginLength())
 
-	_, err = container.Get("name_unknown", func(rpcType, rpcAddr string) caller.Caller {
-		return mockCaller		
+	_, err = container.Get("name_unknown", 1001, func(rpcType string, port int) caller.Caller {
+		return mockCaller
 	})
 
 	assert.Error(t, err)
@@ -314,15 +310,15 @@ func TestGetPluginNotFound(t *testing.T) {
 func TestGetPluginMetaSuccess(t *testing.T) {
 	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
 	assert.NoError(t, err)
-	
+
 	md5 := new(hostMock.MD5Checker)
 	md5.On("Parse", mock.Anything).Return("d41d8cd98f00b204e9800998ecf8427e", nil)
 
-	h := host.New("host_1", toml, md5)	
+	h := host.New("host_1", toml, md5)
 	runner := new(processMock.Runner)
 	processes := new(processMock.ProcessesBuilder)
 	p := process.New(runner, processes)
-	
+
 	exec := executor.New(
 		executor.Register(h, p),
 	)
@@ -330,26 +326,25 @@ func TestGetPluginMetaSuccess(t *testing.T) {
 	container, err := exec.FromHost("host_1")
 	assert.NoError(t, err)
 	assert.True(t, container.IsInstalled())
-	assert.Equal(t, 3, container.PluginLength())	
+	assert.Equal(t, 3, container.PluginLength())
 
 	meta, err := container.GetPluginMeta("name_1")
 	assert.NoError(t, err)
-	assert.Equal(t, "grpc", meta.RPCType)
-	assert.Equal(t, "8080", meta.RPCPort)
+	assert.Equal(t, "grpc", meta.ProtocolType)
 }
 
 func TestGetPluginMetaNotFound(t *testing.T) {
 	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
 	assert.NoError(t, err)
-	
+
 	md5 := new(hostMock.MD5Checker)
 	md5.On("Parse", mock.Anything).Return("d41d8cd98f00b204e9800998ecf8427e", nil)
 
-	h := host.New("host_1", toml, md5)	
+	h := host.New("host_1", toml, md5)
 	runner := new(processMock.Runner)
 	processes := new(processMock.ProcessesBuilder)
 	p := process.New(runner, processes)
-	
+
 	exec := executor.New(
 		executor.Register(h, p),
 	)
@@ -357,7 +352,7 @@ func TestGetPluginMetaNotFound(t *testing.T) {
 	container, err := exec.FromHost("host_1")
 	assert.NoError(t, err)
 	assert.True(t, container.IsInstalled())
-	assert.Equal(t, 3, container.PluginLength())	
+	assert.Equal(t, 3, container.PluginLength())
 
 	_, err = container.GetPluginMeta("name_unknown")
 	assert.Error(t, err)
@@ -368,15 +363,15 @@ func TestAllowedProtocolFailed(t *testing.T) {
 	mockCaller := new(callerMock.Caller)
 	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
 	assert.NoError(t, err)
-	
+
 	md5 := new(hostMock.MD5Checker)
 	md5.On("Parse", mock.Anything).Return("d41d8cd98f00b204e9800998ecf8427e", nil)
 
-	h := host.New("host_1", toml, md5)	
+	h := host.New("host_1", toml, md5)
 	runner := new(processMock.Runner)
 	processes := new(processMock.ProcessesBuilder)
 	p := process.New(runner, processes)
-	
+
 	exec := executor.New(
 		executor.Register(h, p),
 	)
@@ -384,10 +379,10 @@ func TestAllowedProtocolFailed(t *testing.T) {
 	container, err := exec.FromHost("host_1")
 	assert.NoError(t, err)
 	assert.True(t, container.IsInstalled())
-	assert.Equal(t, 3, container.PluginLength())	
+	assert.Equal(t, 3, container.PluginLength())
 
-	_, err = container.Get("name_3", func(rpcType, rpcAddr string) caller.Caller {
-		return mockCaller		
+	_, err = container.Get("name_3", 1001, func(rpcType string, port int) caller.Caller {
+		return mockCaller
 	})
 
 	assert.Error(t, err)

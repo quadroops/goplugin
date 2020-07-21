@@ -12,20 +12,20 @@ type Runner struct {
 	mock.Mock
 }
 
-// Run provides a mock function with given fields: toWait, name, execCommand, args
-func (_m *Runner) Run(toWait int, name string, execCommand string, args ...string) (<-chan process.Plugin, error) {
+// Run provides a mock function with given fields: toWait, name, execCommand, port, args
+func (_m *Runner) Run(toWait int, name string, execCommand string, port int, args ...string) (<-chan process.Plugin, error) {
 	_va := make([]interface{}, len(args))
 	for _i := range args {
 		_va[_i] = args[_i]
 	}
 	var _ca []interface{}
-	_ca = append(_ca, toWait, name, execCommand)
+	_ca = append(_ca, toWait, name, execCommand, port)
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
 	var r0 <-chan process.Plugin
-	if rf, ok := ret.Get(0).(func(int, string, string, ...string) <-chan process.Plugin); ok {
-		r0 = rf(toWait, name, execCommand, args...)
+	if rf, ok := ret.Get(0).(func(int, string, string, int, ...string) <-chan process.Plugin); ok {
+		r0 = rf(toWait, name, execCommand, port, args...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(<-chan process.Plugin)
@@ -33,8 +33,8 @@ func (_m *Runner) Run(toWait int, name string, execCommand string, args ...strin
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(int, string, string, ...string) error); ok {
-		r1 = rf(toWait, name, execCommand, args...)
+	if rf, ok := ret.Get(1).(func(int, string, string, int, ...string) error); ok {
+		r1 = rf(toWait, name, execCommand, port, args...)
 	} else {
 		r1 = ret.Error(1)
 	}

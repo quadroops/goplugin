@@ -3,8 +3,8 @@ package executor
 import (
 	"context"
 
-	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/caller"
+	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/host"
 	"github.com/quadroops/goplugin/pkg/process"
 	"github.com/reactivex/rxgo/v2"
@@ -13,17 +13,17 @@ import (
 // Register used to register a host and their isolated processes
 func Register(h *host.Builder, proc *process.Instance) *Registry {
 	return &Registry{
-		Host: h,
+		Host:    h,
 		Process: proc,
 	}
-} 
+}
 
 // New used to create new instance, with parameter a list of registries
 func New(processes ...*Registry) *Exec {
 	var sources []rxgo.Supplier
 	if len(processes) >= 1 {
 		for _, p := range processes {
-			rebuild := p 
+			rebuild := p
 			source := func(_ context.Context) rxgo.Item {
 				return rxgo.Of(rebuild)
 			}
@@ -49,7 +49,9 @@ func (e *Exec) FromHost(host string) (*Container, error) {
 	observable := rxgo.Start(e.processes)
 	<-observable.Filter(func(i interface{}) bool {
 		reg, ok := i.(*Registry)
-		if !ok { return false }
+		if !ok {
+			return false
+		}
 
 		return reg.Host.Hostname == host
 	}, rxgo.WithCPUPool()).DoOnNext(func(i interface{}) {
@@ -71,7 +73,9 @@ func (c *Container) Setup() error {
 	// only run this step if host has not been installed
 	if !c.installed {
 		plugins, err := c.Registry.Host.Install(c.Registry.Host.Setup())
-		if err != nil { return err }
+		if err != nil {
+			return err
+		}
 
 		c.plugins = plugins[host.Name(c.Registry.Host.Hostname)]
 		c.installed = true
@@ -87,18 +91,21 @@ func (c *Container) IsInstalled() bool {
 
 // PluginLength used to count how many available plugins from given host
 func (c *Container) PluginLength() int {
-	return len(c.plugins) 
+	return len(c.plugins)
 }
 
 // Run used to start plugin's process
-func (c *Container) Run(name string) error {
+func (c *Container) Run(name string, port int) error {
 	pluginMeta, exist := c.plugins[host.PluginName(name)]
-	if !exist { return errs.ErrPluginNotFound }
+	if !exist {
+		return errs.ErrPluginNotFound
+	}
 
 	chanPlugin, err := c.Registry.Process.Run(
-		pluginMeta.ExecTime, 
-		name, 
-		pluginMeta.ExecPath, 
+		pluginMeta.ExecTime,
+		name,
+		pluginMeta.ExecPath,
+		port,
 		pluginMeta.ExecArgs...)
 
 	c.Registry.Process.Watch(chanPlugin, err)
@@ -106,27 +113,34 @@ func (c *Container) Run(name string) error {
 }
 
 // Get used to create plugin's instance
-func (c *Container) Get(name string, builder caller.Builder) (*caller.Plugin, error) {
+func (c *Container) Get(name string, port int, builder caller.Builder) (*caller.Plugin, error) {
 	pluginMeta, exist := c.plugins[host.PluginName(name)]
-	if !exist { return nil, errs.ErrPluginNotFound }
+	if !exist {
+		return nil, errs.ErrPluginNotFound
+	}
 
 	// need to make sure if current plugin's rpc type supported
 	var protocolAllowed bool
 	for _, protocol := range caller.AllowedProtocols {
-		if pluginMeta.RPCType == protocol {
+		if pluginMeta.ProtocolType == protocol {
 			protocolAllowed = true
 			break
 		}
 	}
 
-	if !protocolAllowed { return nil, errs.ErrProtocolUnknown }
-	return caller.New(pluginMeta, builder(pluginMeta.RPCType, pluginMeta.RPCPort)), nil
+	if !protocolAllowed {
+		return nil, errs.ErrProtocolUnknown
+	}
+
+	return caller.New(pluginMeta, builder(pluginMeta.ProtocolType, port)), nil
 }
 
 // GetPluginMeta used to get plugin's metadata
 func (c *Container) GetPluginMeta(name string) (*host.Registry, error) {
 	pluginMeta, exist := c.plugins[host.PluginName(name)]
-	if !exist { return nil, errs.ErrPluginNotFound }
+	if !exist {
+		return nil, errs.ErrPluginNotFound
+	}
 
 	return pluginMeta, nil
 }

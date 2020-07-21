@@ -21,12 +21,12 @@ func New(runner Runner, processes ProcessesBuilder) *Instance {
 }
 
 // Run used to start new subprocess
-func (i *Instance) Run(toWait int, name, command string, args ...string) (<-chan Plugin, error) {
+func (i *Instance) Run(toWait int, name, command string, port int, args ...string) (<-chan Plugin, error) {
 	if i.processes.IsExist(name) {
 		return nil, fmt.Errorf("%w", errs.ErrPluginStarted)
 	}
 
-	return i.runner.Run(toWait, name, command, args...)
+	return i.runner.Run(toWait, name, command, port, args...)
 }
 
 // Watch used to put current running plugin to list of rxgo.Item
