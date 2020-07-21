@@ -12,6 +12,7 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.5.1
+	github.com/vektra/mockery v1.1.2 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.0.0-beta.1
 	google.golang.org/grpc v1.29.1
 	google.golang.org/protobuf v1.24.0
