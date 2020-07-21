@@ -10,13 +10,12 @@ type MD5CheckerProxy interface {
 
 // RegistryProxy used as proxy to host.Registry
 type RegistryProxy struct {
-	ExecPath string
-	ExecArgs []string
-	ExecFile string
-	ExecTime int
-	MD5Sum   string
-	RPCType  string
-	RPCPort  string
+	ExecPath     string
+	ExecArgs     []string
+	ExecFile     string
+	ExecTime     int
+	MD5Sum       string
+	ProtocolType string
 }
 
 // Plugin as main observable item
@@ -30,7 +29,7 @@ type Install struct {
 	MD5Checker MD5CheckerProxy
 }
 
-// NewInstall used to create new instance 
+// NewInstall used to create new instance
 func NewInstall(md5Checker MD5CheckerProxy) *Install {
 	return &Install{md5Checker}
 }
@@ -39,7 +38,9 @@ func NewInstall(md5Checker MD5CheckerProxy) *Install {
 // existence on os
 func (i *Install) FilterByExecFile(v interface{}) bool {
 	plugin, ok := v.(Plugin)
-	if !ok { return false }
+	if !ok {
+		return false
+	}
 
 	_, err := os.Stat(plugin.Registry.ExecFile)
 	return err == nil
@@ -48,10 +49,14 @@ func (i *Install) FilterByExecFile(v interface{}) bool {
 // FilterByMD5 used to filtering item by checking plugin's md5sum
 func (i *Install) FilterByMD5(v interface{}) bool {
 	plugin, ok := v.(Plugin)
-	if !ok { return false }
+	if !ok {
+		return false
+	}
 
 	md5Str, err := i.MD5Checker.Parse(plugin.Registry.ExecFile)
-	if err != nil { return false }
+	if err != nil {
+		return false
+	}
 
 	return md5Str == plugin.Registry.MD5Sum
 }

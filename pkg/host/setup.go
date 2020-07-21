@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/discover"
+	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/host/flow"
 	"github.com/reactivex/rxgo/v2"
 )
@@ -51,13 +51,12 @@ func (b *Builder) Setup() Plugins {
 				pluginInfo, exist := b.Config.Plugins[plugin]
 				if exist {
 					hostPlugins[PluginName(plugin)] = &Registry{
-						ExecFile: pluginInfo.ExecFile,
-						ExecArgs: pluginInfo.ExecArgs,
-						ExecPath: pluginInfo.Exec,
-						ExecTime: pluginInfo.ExecTime,
-						MD5Sum:   pluginInfo.MD5,
-						RPCPort:  pluginInfo.RPCAddr,
-						RPCType:  pluginInfo.RPCType,
+						ExecFile:     pluginInfo.ExecFile,
+						ExecArgs:     pluginInfo.ExecArgs,
+						ExecPath:     pluginInfo.Exec,
+						ExecTime:     pluginInfo.ExecTime,
+						MD5Sum:       pluginInfo.MD5,
+						ProtocolType: pluginInfo.ProtocolType,
 					}
 				}
 			}
@@ -79,21 +78,20 @@ func (b *Builder) Install(plugins Plugins) (Host, error) {
 	source := func(_ context.Context, next chan<- rxgo.Item) {
 		for name, p := range plugins {
 			flowInstallRegistry := flow.RegistryProxy{
-				ExecFile: p.ExecFile,
-				ExecArgs: p.ExecArgs,
-				ExecPath: p.ExecPath,
-				ExecTime: p.ExecTime,
-				MD5Sum: p.MD5Sum,
-				RPCPort: p.RPCPort,
-				RPCType: p.RPCType,
+				ExecFile:     p.ExecFile,
+				ExecArgs:     p.ExecArgs,
+				ExecPath:     p.ExecPath,
+				ExecTime:     p.ExecTime,
+				MD5Sum:       p.MD5Sum,
+				ProtocolType: p.ProtocolType,
 			}
 
 			flowPlugin := flow.Plugin{
-				Name: string(name),
+				Name:     string(name),
 				Registry: flowInstallRegistry,
 			}
 
-			next <- rxgo.Of(flowPlugin) 
+			next <- rxgo.Of(flowPlugin)
 		}
 	}
 
@@ -105,13 +103,12 @@ func (b *Builder) Install(plugins Plugins) (Host, error) {
 			plugin, ok := v.(flow.Plugin)
 			if ok {
 				rebuildlugins[PluginName(plugin.Name)] = &Registry{
-					ExecFile: plugin.Registry.ExecFile,
-					ExecArgs: plugin.Registry.ExecArgs,
-					ExecPath: plugin.Registry.ExecPath,
-					ExecTime: plugin.Registry.ExecTime,
-					MD5Sum: plugin.Registry.MD5Sum,
-					RPCPort: plugin.Registry.RPCPort,
-					RPCType: plugin.Registry.RPCType,
+					ExecFile:     plugin.Registry.ExecFile,
+					ExecArgs:     plugin.Registry.ExecArgs,
+					ExecPath:     plugin.Registry.ExecPath,
+					ExecTime:     plugin.Registry.ExecTime,
+					MD5Sum:       plugin.Registry.MD5Sum,
+					ProtocolType: plugin.Registry.ProtocolType,
 				}
 			}
 		})
@@ -120,6 +117,6 @@ func (b *Builder) Install(plugins Plugins) (Host, error) {
 		return nil, errs.ErrNoPlugins
 	}
 
-	host[Name(b.Hostname)] = rebuildlugins 
+	host[Name(b.Hostname)] = rebuildlugins
 	return host, nil
 }

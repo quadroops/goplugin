@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/discover/driver"
+	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/host"
 	"github.com/quadroops/goplugin/pkg/host/mocks"
 	"github.com/stretchr/testify/assert"
@@ -45,8 +45,7 @@ const (
 		exec = "./tmp/test"
     	exec_file = "./tmp/test"
 		exec_time = 5
-		rpc_type = "grpc"
-		rpc_addr = "8080"
+		protocol_type = "grpc"
 		
 		[plugins.name_2]
 		author = "author_2|author_2@gmail.com"
@@ -54,8 +53,7 @@ const (
 		exec = "/path/to/exec"
     	exec_file = "/path/to/exec"
 		exec_time = 10
-		rpc_type = "rest"
-		rpc_addr = "8080"
+		protocol_type = "grpc"
 		
 		[plugins.name_3]
 		author = "author_3|author_3@gmail.com"
@@ -63,8 +61,7 @@ const (
 		exec = "./tmp/test"
     	exec_file = "./tmp/test"
 		exec_time = 20
-		rpc_type = "nano"
-		rpc_addr = "8080"
+		protocol_type = "grpc"
 
 	# Used as service registries
 	# A service is an application that consume / using plugins
@@ -97,7 +94,7 @@ func TestSetupSuccess(t *testing.T) {
 	plugin, exist := hmap[host.PluginName("name_1")]
 	assert.True(t, exist)
 	assert.Equal(t, "./tmp/test", plugin.ExecPath)
-	assert.Equal(t, "grpc", plugin.RPCType)
+	assert.Equal(t, "grpc", plugin.ProtocolType)
 	assert.Equal(t, 5, plugin.ExecTime)
 	assert.Equal(t, "d41d8cd98f00b204e9800998ecf8427e", plugin.MD5Sum)
 }
@@ -174,7 +171,7 @@ func TestInstallNoPlugins(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, conf.Plugins, 3)
 	assert.Len(t, conf.Hosts, 3)
-	
+
 	md5Drv := new(mocks.MD5Checker)
 	md5Drv.On("Parse", mock.Anything).Return("", errors.New("error"))
 

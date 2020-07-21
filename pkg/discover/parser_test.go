@@ -4,17 +4,17 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/discover"
 	"github.com/quadroops/goplugin/pkg/discover/mocks"
+	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/stretchr/testify/assert"
 )
 
 func _generate_config() *discover.PluginConfig {
 	meta := discover.PluginMeta{
-		Author: "test-author",
+		Author:       "test-author",
 		Contributors: []string{"test1"},
-		Version: "1.0.0",
+		Version:      "1.0.0",
 	}
 
 	settings := discover.PluginSettings{
@@ -23,23 +23,23 @@ func _generate_config() *discover.PluginConfig {
 
 	pluginMap := make(map[string]discover.PluginInfo)
 	pluginMap["test"] = discover.PluginInfo{
-		Author: "test-author-plugin",
-		Exec: "test-exec",
-		ExecTime: 10,
-		MD5: "2323233",
-		RPCType: "nano",
+		Author:       "test-author-plugin",
+		Exec:         "test-exec",
+		ExecTime:     10,
+		MD5:          "2323233",
+		ProtocolType: "nano",
 	}
 
 	hostMap := make(map[string]discover.PluginHost)
 	hostMap["test-host"] = discover.PluginHost{
 		Plugins: []string{"test"},
 	}
-	
+
 	return &discover.PluginConfig{
-		Meta: meta,
+		Meta:     meta,
 		Settings: settings,
-		Hosts: hostMap,
-		Plugins: pluginMap,
+		Hosts:    hostMap,
+		Plugins:  pluginMap,
 	}
 }
 
@@ -72,7 +72,7 @@ func TestLoadConfigErrorFileReader(t *testing.T) {
 	_, err := configParser.Load(confPath)
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrReadConfigFile))
-	
+
 	mockFileReader.AssertCalled(t, "ReadFile", confPath)
 	mockTomlParser.AssertNotCalled(t, "Parse", []byte("test"))
 }
@@ -89,7 +89,7 @@ func TestLoadConfigErrorParser(t *testing.T) {
 	_, err := configParser.Load(confPath)
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrParseConfig))
-	
+
 	mockFileReader.AssertCalled(t, "ReadFile", confPath)
 	mockTomlParser.AssertCalled(t, "Parse", []byte("test"))
 }

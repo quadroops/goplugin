@@ -38,14 +38,13 @@ type PluginSettings struct {
 
 // PluginInfo used to save all plugin's basic informations
 type PluginInfo struct {
-	Author   string   `toml:"author"`
-	MD5      string   `toml:"md5"`
-	Exec     string   `toml:"exec"`
-	ExecArgs []string `toml:"exec_args"`
-	ExecFile string   `toml:"exec_file"`
-	ExecTime int      `toml:"exec_time"`
-	RPCType  string   `toml:"comm_type"`
-	RPCAddr  string   `toml:"comm_port"`
+	Author       string   `toml:"author"`
+	MD5          string   `toml:"md5"`
+	Exec         string   `toml:"exec"`
+	ExecArgs     []string `toml:"exec_args"`
+	ExecFile     string   `toml:"exec_file"`
+	ExecTime     int      `toml:"exec_time"`
+	ProtocolType string   `toml:"protocol_type"`
 }
 
 // PluginHost used to save all registered service's plugins

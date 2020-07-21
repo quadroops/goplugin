@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/discover/driver"
+	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/host/flow"
 	"github.com/reactivex/rxgo/v2"
 	"github.com/stretchr/testify/assert"
@@ -45,8 +45,7 @@ const (
 		exec = "./tmp/test"
     	exec_file = "./tmp/test"
 		exec_time = 5
-		rpc_type = "grpc"
-		rpc_addr = "8080"
+		protocol_type = "grpc"
 		
 		[plugins.name_2]
 		author = "author_2|author_2@gmail.com"
@@ -54,8 +53,7 @@ const (
 		exec = "/path/to/exec"
     	exec_file = "/path/to/exec"
 		exec_time = 10
-		rpc_type = "rest"
-		rpc_addr = "8080"
+		protocol_type = "grpc"
 		
 		[plugins.name_3]
 		author = "author_3|author_3@gmail.com"
@@ -63,8 +61,7 @@ const (
 		exec = "./tmp/test"
     	exec_file = "./tmp/test"
 		exec_time = 20
-		rpc_type = "nano"
-		rpc_addr = "8080"
+		protocol_type = "grpc"
 
 	# Used as service registries
 	# A service is an application that consume / using plugins
@@ -199,7 +196,7 @@ func TestFlatToNewObservableErrorCast(t *testing.T) {
 
 	f := flow.NewSetup("host_1", conf)
 	observable := f.FlatToNewObservable(rxgo.Of(1))
-	rxgo.Assert(context.Background(), t, observable, 
+	rxgo.Assert(context.Background(), t, observable,
 		rxgo.HasError(errs.ErrCastInterface),
 	)
 }
@@ -213,7 +210,7 @@ func TestFlatToNewObservableErrorEmtpyPlugins(t *testing.T) {
 
 	plugins := []string{}
 	observable := f.FlatToNewObservable(rxgo.Of(plugins))
-	rxgo.Assert(context.Background(), t, observable, 
+	rxgo.Assert(context.Background(), t, observable,
 		rxgo.HasError(errs.ErrNoPlugins),
 	)
 }
@@ -227,7 +224,7 @@ func TestFlatToNewObservableNoErrors(t *testing.T) {
 
 	plugins := []string{"test_1"}
 	observable := f.FlatToNewObservable(rxgo.Of(plugins))
-	rxgo.Assert(context.Background(), t, observable, 
+	rxgo.Assert(context.Background(), t, observable,
 		rxgo.HasNoError(),
 		rxgo.IsNotEmpty(),
 		rxgo.HasItems("test_1"),

@@ -13,13 +13,12 @@ type PluginName string
 
 // Registry used for storing validated plugins
 type Registry struct {
-	ExecPath string
-	ExecArgs []string
-	ExecFile string
-	ExecTime int
-	MD5Sum   string
-	RPCType  string
-	RPCPort  string
+	ExecPath     string
+	ExecArgs     []string
+	ExecFile     string
+	ExecTime     int
+	MD5Sum       string
+	ProtocolType string
 }
 
 // Plugins is a mapper a plugin and their metadata

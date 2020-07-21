@@ -24,16 +24,15 @@ const (
 
 // Info used to store plugin's main data
 type Info struct {
-	Name     string
-	Hosts    []string
-	Author   string
-	MD5      string
-	Exec     string
-	ExecArgs []string `toml:"exec_args"`
-	ExecFile string   `toml:"exec_file"`
-	ExecTime int      `toml:"exec_time"`
-	CommType string   `toml:"comm_type"`
-	CommPort string   `toml:"comm_port"`
+	Name          string
+	Hosts         []string
+	Author        string
+	MD5           string
+	Exec          string
+	ExecArgs      []string `toml:"exec_args"`
+	ExecFile      string   `toml:"exec_file"`
+	ExecTime      int      `toml:"exec_time"`
+	PrototcolType string   `toml:"protocol_type"`
 }
 
 // Plugin used as main data entity used to store all plugin's informations
@@ -205,14 +204,13 @@ func parseConfToml(confpath string) (*discover.PluginConfig, error) {
 
 func mergeConfig(confToml *discover.PluginConfig, plugin *Plugin) *discover.PluginConfig {
 	pluginInfo := discover.PluginInfo{
-		Author:   plugin.Plugin.Author,
-		Exec:     plugin.Plugin.Exec,
-		ExecArgs: plugin.Plugin.ExecArgs,
-		ExecFile: plugin.Plugin.ExecFile,
-		ExecTime: plugin.Plugin.ExecTime,
-		MD5:      plugin.Plugin.MD5,
-		RPCAddr:  plugin.Plugin.CommPort,
-		RPCType:  plugin.Plugin.CommType,
+		Author:       plugin.Plugin.Author,
+		Exec:         plugin.Plugin.Exec,
+		ExecArgs:     plugin.Plugin.ExecArgs,
+		ExecFile:     plugin.Plugin.ExecFile,
+		ExecTime:     plugin.Plugin.ExecTime,
+		MD5:          plugin.Plugin.MD5,
+		ProtocolType: plugin.Plugin.PrototcolType,
 	}
 
 	if len(plugin.Plugin.Hosts) >= 1 {
