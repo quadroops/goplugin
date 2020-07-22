@@ -108,7 +108,7 @@ func renderPlugins(conf *discover.PluginConfig) {
 
 	var data [][]string
 	for name, plugin := range conf.Plugins {
-		d := []string{name, plugin.MD5, plugin.Author, plugin.Exec, plugin.ExecFile, strconv.Itoa(plugin.ExecTime), plugin.RPCType, plugin.RPCAddr}
+		d := []string{name, plugin.MD5, plugin.Author, plugin.Exec, plugin.ExecFile, strconv.Itoa(plugin.ExecTime), plugin.ProtocolType}
 		data = append(data, d)
 	}
 

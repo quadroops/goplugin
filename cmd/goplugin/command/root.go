@@ -16,6 +16,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(discoverCmd)
 	rootCmd.AddCommand(pluginCmd)
+	rootCmd.AddCommand(configCmd)
 }
 
 // Execute will provide main cmd application

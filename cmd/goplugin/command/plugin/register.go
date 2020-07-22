@@ -55,7 +55,7 @@ var PluginRegisterCmd = &cobra.Command{
 	Use:     "register",
 	Short:   "Register new plugin",
 	Long:    "You can register a plugin from current working directory or by giving custom plugin path",
-	Example: "go plugin register --pluginpath=/home/my/myplugin",
+	Example: "goplugin plugin register --pluginpath=/home/my/myplugin",
 	Run: func(cmd *cobra.Command, args []string) {
 		var pluginPath, configpath string
 
