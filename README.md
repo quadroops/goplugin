@@ -60,7 +60,7 @@ exec = "/path/to/exec"
 exec_args = ["--myparam", "mycustom"]
 exec_file = "/path/to/exec"
 exec_time = 5
-comm_type = "grpc"
+protocol_type = "grpc"
 hosts = ["host_1", "host_2"]
 ```
 
