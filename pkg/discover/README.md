@@ -27,7 +27,7 @@ from there, if still not exist then throw a panic error.
 
 ## Toml Configuration Values
 
-```toml
+```
 
 [meta]
 version = "1.0.0"
