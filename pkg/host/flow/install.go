@@ -2,9 +2,9 @@ package flow
 
 import "os"
 
-// MD5CheckerProxy used as proxy interface to solve
+// IdentityCheckerProxy used as proxy interface to solve
 // cyclic dependency relate with MD5Checker
-type MD5CheckerProxy interface {
+type IdentityCheckerProxy interface {
 	Parse(file string) (string, error)
 }
 
@@ -26,12 +26,12 @@ type Plugin struct {
 
 // Install used as main flows for install process
 type Install struct {
-	MD5Checker MD5CheckerProxy
+	IDChecker IdentityCheckerProxy
 }
 
 // NewInstall used to create new instance
-func NewInstall(md5Checker MD5CheckerProxy) *Install {
-	return &Install{md5Checker}
+func NewInstall(checker IdentityCheckerProxy) *Install {
+	return &Install{checker}
 }
 
 // FilterByExecFile used to filtering item by checking plugin's file
@@ -53,7 +53,7 @@ func (i *Install) FilterByMD5(v interface{}) bool {
 		return false
 	}
 
-	md5Str, err := i.MD5Checker.Parse(plugin.Registry.ExecFile)
+	md5Str, err := i.IDChecker.Parse(plugin.Registry.ExecFile)
 	if err != nil {
 		return false
 	}

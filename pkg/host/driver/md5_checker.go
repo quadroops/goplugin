@@ -1,21 +1,23 @@
 package driver
 
 import (
+	"crypto/md5"
 	"fmt"
 	"io"
 	"os"
-	"crypto/md5"
-	"github.com/quadroops/goplugin/pkg/host"
-) 
+)
 
-type driverMd5Checker struct {}
+// Md5Checker used to parse md5 value from a given file path
+// implement host.IdentityChecker
+type Md5Checker struct{}
 
 // NewMd5Check used to create an instance of driver md5 checker
-func NewMd5Check() host.MD5Checker {
-	return &driverMd5Checker{}
+func NewMd5Check() *Md5Checker {
+	return &Md5Checker{}
 }
 
-func (drv *driverMd5Checker) Parse(file string) (string, error) {
+// Parse get the md5 value from a file
+func (drv *Md5Checker) Parse(file string) (string, error) {
 	f, err := os.Open(file)
 	if err != nil {
 		return "", err

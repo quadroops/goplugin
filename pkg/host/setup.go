@@ -12,17 +12,17 @@ import (
 
 // Builder used to create host metadata
 type Builder struct {
-	Hostname   string
-	Config     *discover.PluginConfig
-	md5Checker MD5Checker
+	Hostname        string
+	Config          *discover.PluginConfig
+	identityChecker IdentityChecker
 }
 
 // New used to create new instance of host
-func New(hostname string, config *discover.PluginConfig, md5Checker MD5Checker) *Builder {
+func New(hostname string, config *discover.PluginConfig, md5Checker IdentityChecker) *Builder {
 	return &Builder{
-		Hostname:   hostname,
-		Config:     config,
-		md5Checker: md5Checker,
+		Hostname:        hostname,
+		Config:          config,
+		identityChecker: md5Checker,
 	}
 }
 
@@ -95,7 +95,7 @@ func (b *Builder) Install(plugins Plugins) (Host, error) {
 		}
 	}
 
-	f := flow.NewInstall(b.md5Checker)
+	f := flow.NewInstall(b.identityChecker)
 	<-rxgo.Defer([]rxgo.Producer{source}).
 		Filter(f.FilterByExecFile, rxgo.WithCPUPool()).
 		Filter(f.FilterByMD5, rxgo.WithCPUPool()).

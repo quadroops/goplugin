@@ -1,8 +1,9 @@
 package host
 
-// MD5Checker used to parse a md5 value from given filepath
-type MD5Checker interface {
-	Parse(file string) (string, error)
+// IdentityChecker used to check identity for security purpose
+// By default, we will use md5 file checker to check plugin's md5 value
+type IdentityChecker interface {
+	Parse(source string) (string, error)
 }
 
 // Name used for host name
