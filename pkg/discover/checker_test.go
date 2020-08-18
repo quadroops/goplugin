@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/discover"
 	"github.com/quadroops/goplugin/pkg/discover/mocks"
+	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,8 +22,8 @@ func TestSuccessLoadFromOS(t *testing.T) {
 	conf, err := checker.Explore()
 	assert.NoError(t, err)
 	assert.Equal(t, conf, mockReturnFile)
-	mockOSChecker.AssertCalled(t, "Check")
-	mockDefaultChecker.AssertCalled(t, "Check")
+	assert.True(t, mockOSChecker.AssertCalled(t, "Check"))
+	assert.True(t, mockDefaultChecker.AssertNotCalled(t, "Check"))
 }
 
 func TestSuccessLoadFromDefault(t *testing.T) {
@@ -55,4 +55,11 @@ func TestErrorNotFound(t *testing.T) {
 	assert.True(t, errors.Is(err, errs.ErrConfigNotFound))
 	mockOSChecker.AssertCalled(t, "Check")
 	mockDefaultChecker.AssertCalled(t, "Check")
+}
+
+func TestErrorNoCheckers(t *testing.T) {
+	checker := discover.NewConfigChecker()
+	_, err := checker.Explore()
+	assert.Error(t, err)
+	assert.True(t, errors.Is(err, errs.ErrDiscoverNoCheckers))
 }

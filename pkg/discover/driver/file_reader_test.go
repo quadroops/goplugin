@@ -13,13 +13,13 @@ const (
 
 func TestFileReaderSucces(t *testing.T) {
 	fr := driver.NewFileReader()
-	b, err := fr.ReadFile(fileToTest)
+	b, err := fr.Read(fileToTest)
 	assert.NoError(t, err)
 	assert.Equal(t, string(b), "testing")
 }
 
 func TestFileReaderFileNotFound(t *testing.T) {
 	fr := driver.NewFileReader()
-	_, err := fr.ReadFile("Unknown file")
+	_, err := fr.Read("Unknown file")
 	assert.Error(t, err)
 }

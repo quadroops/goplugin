@@ -8,26 +8,25 @@ import (
 
 // ConfigChecker used as main struct to explore config file path
 type ConfigChecker struct {
-	osChecker      Checker
-	defaultChecker Checker
+	checkers []Checker
 }
 
 // NewConfigChecker used to create new instance of ConfigChecker
-func NewConfigChecker(osChecker, defaultChecker Checker) *ConfigChecker {
-	return &ConfigChecker{osChecker: osChecker, defaultChecker: defaultChecker}
+func NewConfigChecker(checkers ...Checker) *ConfigChecker {
+	return &ConfigChecker{checkers: checkers}
 }
 
 // Explore used to explore configuration's file from os or default home dir
 func (cc *ConfigChecker) Explore() (string, error) {
-	loadFromOS := cc.osChecker.Check()
-	loadFromDefault := cc.defaultChecker.Check()
-
-	if loadFromOS != "" {
-		return loadFromOS, nil
+	if len(cc.checkers) < 1 {
+		return "", fmt.Errorf("%w", errs.ErrDiscoverNoCheckers)
 	}
 
-	if loadFromDefault != "" {
-		return loadFromDefault, nil
+	for _, checker := range cc.checkers {
+		configPath := checker.Check()
+		if configPath != "" && len(configPath) > 0 {
+			return configPath, nil
+		}
 	}
 
 	return "", fmt.Errorf("%w", errs.ErrConfigNotFound)

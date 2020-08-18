@@ -47,49 +47,48 @@ func TestLoadConfigSuccess(t *testing.T) {
 	confPath := "config.toml"
 
 	mockTomlParser := new(mocks.Parser)
-	mockFileReader := new(mocks.FileReader)
+	mockSourceReader := new(mocks.SourceReader)
 
-	mockFileReader.On("ReadFile", confPath).Return([]byte("test"), nil)
+	mockSourceReader.On("Read", confPath).Return([]byte("test"), nil)
 	mockTomlParser.On("Parse", []byte("test")).Return(_generate_config(), nil)
 
-	configParser := discover.NewConfigParser(mockTomlParser, mockFileReader)
+	configParser := discover.NewConfigParser(mockTomlParser, mockSourceReader)
 	config, err := configParser.Load(confPath)
 	assert.NoError(t, err)
 	assert.Equal(t, config.Meta.Version, "1.0.0")
-
-	mockFileReader.AssertCalled(t, "ReadFile", confPath)
-	mockTomlParser.AssertCalled(t, "Parse", []byte("test"))
+	assert.True(t, mockSourceReader.AssertCalled(t, "Read", confPath))
+	assert.True(t, mockTomlParser.AssertCalled(t, "Parse", []byte("test")))
 }
 
 func TestLoadConfigErrorFileReader(t *testing.T) {
 	confPath := "config.toml"
 
 	mockTomlParser := new(mocks.Parser)
-	mockFileReader := new(mocks.FileReader)
+	mockSourceReader := new(mocks.SourceReader)
 
-	mockFileReader.On("ReadFile", confPath).Return(nil, errors.New("error reader"))
-	configParser := discover.NewConfigParser(mockTomlParser, mockFileReader)
+	mockSourceReader.On("Read", confPath).Return(nil, errors.New("error reader"))
+	configParser := discover.NewConfigParser(mockTomlParser, mockSourceReader)
 	_, err := configParser.Load(confPath)
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrReadConfigFile))
 
-	mockFileReader.AssertCalled(t, "ReadFile", confPath)
-	mockTomlParser.AssertNotCalled(t, "Parse", []byte("test"))
+	assert.True(t, mockSourceReader.AssertCalled(t, "Read", confPath))
+	assert.True(t, mockTomlParser.AssertNotCalled(t, "Parse", []byte("test")))
 }
 
 func TestLoadConfigErrorParser(t *testing.T) {
 	confPath := "config.toml"
 
 	mockTomlParser := new(mocks.Parser)
-	mockFileReader := new(mocks.FileReader)
+	mockSourceReader := new(mocks.SourceReader)
 
-	mockFileReader.On("ReadFile", confPath).Return([]byte("test"), nil)
+	mockSourceReader.On("Read", confPath).Return([]byte("test"), nil)
 	mockTomlParser.On("Parse", []byte("test")).Return(nil, errors.New("error parser"))
-	configParser := discover.NewConfigParser(mockTomlParser, mockFileReader)
+	configParser := discover.NewConfigParser(mockTomlParser, mockSourceReader)
 	_, err := configParser.Load(confPath)
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrParseConfig))
 
-	mockFileReader.AssertCalled(t, "ReadFile", confPath)
-	mockTomlParser.AssertCalled(t, "Parse", []byte("test"))
+	assert.True(t, mockSourceReader.AssertCalled(t, "Read", confPath))
+	assert.True(t, mockTomlParser.AssertCalled(t, "Parse", []byte("test")))
 }

@@ -3,19 +3,19 @@ package driver
 import (
 	"fmt"
 	"io/ioutil"
-
-	"github.com/quadroops/goplugin/pkg/discover"
 )
 
-type reader struct {}
+// SourceFileReader used to read config source from a file
+// implement discocver.SourceReader
+type SourceFileReader struct{}
 
 // NewFileReader used to create new instance of os file reader
 // using ioutil as implementation
-func NewFileReader() discover.FileReader {
-	return &reader{}
+func NewFileReader() *SourceFileReader {
+	return &SourceFileReader{}
 }
 
-func (r *reader) ReadFile(filepath string) ([]byte, error) {
+func (r *SourceFileReader) Read(filepath string) ([]byte, error) {
 	b, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		return nil, fmt.Errorf("%v", err)

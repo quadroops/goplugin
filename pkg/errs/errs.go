@@ -1,10 +1,13 @@
-package errs 
+package errs
 
 import "errors"
 
 var (
 	// ErrCastInterface used when failed to cast some interface value
 	ErrCastInterface = errors.New("Cannot cast interface")
+
+	// ErrDiscoverNoCheckers used when there are no available checkers
+	ErrDiscoverNoCheckers = errors.New("No discover checker available")
 
 	// ErrReadConfigFile used when failed to read given config filepath
 	ErrReadConfigFile = errors.New("Cannot read given config path")
@@ -44,7 +47,7 @@ var (
 
 	// ErrPluginExec used when found any errors when calling an exec command to plugin
 	ErrPluginExec = errors.New("Plugin cannot exec")
-	
+
 	// ErrProtocolUnknown used when plugin define unsuppported protocol
 	ErrProtocolUnknown = errors.New("Illegal protocol")
 
@@ -53,4 +56,4 @@ var (
 
 	// ErrProtocolGRPCResponse used when an error on response
 	ErrProtocolGRPCResponse = errors.New("Error grpc response")
-) 
+)

@@ -3,7 +3,7 @@ package discover
 // Checker is basic interface and should be implemented
 // by any objects that want to check config file path
 type Checker interface {
-	// Check should be return a string of config file path
+	// Check should return a string of config file path
 	// and just throw a panic if current file not exist
 	Check() string
 }
@@ -13,9 +13,9 @@ type Parser interface {
 	Parse(content []byte) (*PluginConfig, error)
 }
 
-// FileReader is an interface to abstract filesystem activity
-type FileReader interface {
-	ReadFile(filepath string) ([]byte, error)
+// SourceReader is an interface to abstract config reader activity
+type SourceReader interface {
+	Read(sourceAddr string) ([]byte, error)
 }
 
 // PluginInit used to save initialize states
