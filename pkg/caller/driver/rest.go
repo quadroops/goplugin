@@ -2,15 +2,15 @@ package driver
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
-	"encoding/hex"
 
-	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/caller"
+	"github.com/quadroops/goplugin/pkg/errs"
 )
 
 const (
@@ -21,7 +21,7 @@ const (
 	PathExec = "/exec"
 
 	// Timeout used to waiting client response and cancel the request after limit timeout reached
-	Timeout  = 5
+	Timeout = 5
 )
 
 // RESTOption used as main option data
@@ -60,6 +60,11 @@ func NewREST(addr string, o *RESTOption) caller.Caller {
 
 	if o != nil {
 		opt = o
+	}
+
+	// override timeout if less than 1s or not defined
+	if opt.Timeout == 0 {
+		opt.Timeout = Timeout
 	}
 
 	return &rest{addr, opt}
@@ -108,7 +113,7 @@ func (r *rest) Ping() (string, error) {
 	var response JSONResponse
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		return "", fmt.Errorf("%w: %q", errs.ErrPluginCall, err) 
+		return "", fmt.Errorf("%w: %q", errs.ErrPluginCall, err)
 	}
 
 	return fmt.Sprintf("%v", response.Data.Response), nil
@@ -117,7 +122,7 @@ func (r *rest) Ping() (string, error) {
 func (r *rest) Exec(cmdName string, payload []byte) ([]byte, error) {
 	endpoint := fmt.Sprintf("%s%s", r.address, PathExec)
 	p := JSONExecPayload{
-		Cmd: cmdName,
+		Cmd:     cmdName,
 		Payload: hex.EncodeToString(payload),
 	}
 
@@ -131,7 +136,7 @@ func (r *rest) Exec(cmdName string, payload []byte) ([]byte, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, errs.ErrPluginExec
 	}
@@ -144,7 +149,7 @@ func (r *rest) Exec(cmdName string, payload []byte) ([]byte, error) {
 	var response JSONResponse
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %q", errs.ErrPluginCall, err) 
+		return nil, fmt.Errorf("%w: %q", errs.ErrPluginCall, err)
 	}
 
 	respStr, ok := response.Data.Response.(string)
@@ -154,7 +159,7 @@ func (r *rest) Exec(cmdName string, payload []byte) ([]byte, error) {
 
 	b, err := hex.DecodeString(respStr)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %q", errs.ErrPluginExec, err) 
+		return nil, fmt.Errorf("%w: %q", errs.ErrPluginExec, err)
 	}
 
 	return b, nil

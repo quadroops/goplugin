@@ -15,6 +15,10 @@ var (
 	// ErrParseConfig used when cannot parse toml's contents
 	ErrParseConfig = errors.New("Failed to parse configurations")
 
+	// ErrNoHosts used when our factory doesnt have any hosts registered on their
+	// registry list
+	ErrNoHosts = errors.New("No hosts available")
+
 	// ErrEmptyPlugins used when host trying install with empty Plugins
 	ErrEmptyPlugins = errors.New("Cannot install empty plugins")
 

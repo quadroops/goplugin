@@ -12,12 +12,20 @@ type Instance struct {
 	processes ProcessesBuilder
 }
 
+// OnError used to catch error
+type OnError func(err error)
+
 // New used to create new process instance
 func New(runner Runner, processes ProcessesBuilder) *Instance {
 	return &Instance{
 		runner:    runner,
 		processes: processes,
 	}
+}
+
+// IsReady used to check if requested plugin started or not
+func (i *Instance) IsReady(name string) bool {
+	return i.processes.IsExist(name)
 }
 
 // Run used to start new subprocess
