@@ -25,7 +25,7 @@ func (r *runner) Run(toWait int, name, command string, port int, args ...string)
 	var stdout, stderr utils.Buffer
 	ctx, cancel := context.WithCancel(context.Background())
 
-	args = append(args, "--port", strconv.Itoa(port))
+	args = append(args, "-port", strconv.Itoa(port))
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	cmd.Stdout = &stdout

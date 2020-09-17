@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	ErrFinished = errors.New("os: process already finished") 
+	ErrFinished = errors.New("os: process already finished")
 )
 
 func checkProcessExist(id int) bool {
@@ -36,7 +36,7 @@ func checkProcessExist(id int) bool {
 
 func TestRunSubProcessSuccess(t *testing.T) {
 	sub := driver.NewSubProcess()
-	process, err := sub.Run(1, "test", "sleep", "5")
+	process, err := sub.Run(1, "test", "sleep", 5)
 	assert.NoError(t, err)
 
 	select {
@@ -50,7 +50,7 @@ func TestRunSubProcessSuccess(t *testing.T) {
 
 func TestRunSubProcessUnknownCommand(t *testing.T) {
 	sub := driver.NewSubProcess()
-	process, err := sub.Run(1, "test", "unkwon")
+	process, err := sub.Run(1, "test", "unkwon", 5)
 	assert.Error(t, err)
 	assert.Nil(t, process)
 }

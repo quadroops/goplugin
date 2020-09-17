@@ -18,24 +18,26 @@ type Registry struct {
 
 // Register used to collect available hosts and run
 // executor behind it
-func Register(hostPlugins ...*GoPlugin) *Registry {
+func Register(hostPlugins ...*GoPlugin) (*Registry, error) {
 	var registries []*executor.Registry
 	var hosts []*host.Builder
 
 	if len(hostPlugins) >= 1 {
 		for _, h := range hostPlugins {
 			host, err := h.Build()
-			if err == nil {
-				hosts = append(hosts, host)
-				reg := executor.Register(host, h.GetProcessInstance())
-				registries = append(registries, reg)
+			if err != nil {
+				return nil, err
 			}
+
+			hosts = append(hosts, host)
+			reg := executor.Register(host, h.GetProcessInstance())
+			registries = append(registries, reg)
 		}
 	}
 
 	return &Registry{
 		exec: executor.New(registries...),
-	}
+	}, nil
 }
 
 // Setup .
