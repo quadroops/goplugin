@@ -70,12 +70,15 @@ func main() {
         hostB.GetPluginInstance().KillAll()
     }()
 
-    pluggable := goplugin.Register(
+    pluggable, err := goplugin.Register(
         hostA,
         hostB,
     )
+    if err != nil {
+        panic(err)
+    }
 
-    err := pluggable.Setup()
+    err = pluggable.Setup()
     if err != nil {
         panic(err)
     }

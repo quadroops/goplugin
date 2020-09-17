@@ -36,7 +36,8 @@ func Register(hostPlugins ...*GoPlugin) (*Registry, error) {
 	}
 
 	return &Registry{
-		exec: executor.New(registries...),
+		exec:  executor.New(registries...),
+		hosts: hosts,
 	}, nil
 }
 
@@ -57,11 +58,11 @@ func (r *Registry) Setup() error {
 		}
 
 		if errGroups != nil {
-			return errGroups
+			return fmt.Errorf("%w: %q", errs.ErrNoHosts, errGroups)
 		}
 	}
 
-	return fmt.Errorf("%w", errs.ErrNoHosts)
+	return nil
 }
 
 // FromHost here is just a proxy to call FromHot from executor

@@ -86,10 +86,11 @@ func main() {
 			return c.Status(http.StatusBadRequest).JSON(out)
 		}
 
+		respHex := hex.EncodeToString(payloadHex)
 		out := Response{
 			Status: "success",
 			Data: Output{
-				Response: string(payloadHex),
+				Response: respHex,
 			},
 		}
 

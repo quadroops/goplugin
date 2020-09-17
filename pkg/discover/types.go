@@ -44,7 +44,7 @@ type PluginInfo struct {
 	ExecArgs     []string `toml:"exec_args"`
 	ExecFile     string   `toml:"exec_file"`
 	ExecTime     int      `toml:"exec_time"`
-	ProtocolType string   `toml:"protocol_type"`
+	ProtocolType string   `toml:"comm_type"`
 }
 
 // PluginHost used to save all registered service's plugins

@@ -1,10 +1,19 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/quadroops/goplugin"
 )
+
+var (
+	msg = flag.String("msg", "world", "Setup message to exec")
+)
+
+func init() {
+	flag.Parse()
+}
 
 func main() {
 	mainHost := goplugin.New("main")
@@ -12,8 +21,12 @@ func main() {
 		mainHost.GetProcessInstance().KillAll()
 	}()
 
-	pluggable := goplugin.Register(mainHost)
-	err := pluggable.Setup()
+	pluggable, err := goplugin.Register(mainHost)
+	if err != nil {
+		panic(err)
+	}
+
+	err = pluggable.Setup()
 	if err != nil {
 		panic(err)
 	}
@@ -41,4 +54,11 @@ func main() {
 	}
 
 	log.Printf("Response ping: %s", resp)
+
+	respExec, err := pluginHello.Exec("hello.msg", []byte(*msg))
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("Response exec: %s", respExec)
 }
