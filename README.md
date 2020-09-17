@@ -193,3 +193,9 @@ Available options for customization:
 - `goplugin.WithCustomConfigParser`
 - `goplugin.WithCustomIdentityChecker`
 - `goplugin.WithCustomProcess`
+
+---
+
+## Examples
+
+Please refer to our [examples](https://github.com/quadroops/goplugin)
