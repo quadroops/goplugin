@@ -55,6 +55,9 @@ var (
 	// ErrProtocolUnknown used when plugin define unsuppported protocol
 	ErrProtocolUnknown = errors.New("Illegal protocol")
 
+	// ErrProtocolRESTRequest used when rest plugin trigger an error when do request action
+	ErrProtocolRESTRequest = errors.New("Error request rest connection")
+
 	// ErrProtocolGRPCConnection used for an error grpc connection
 	ErrProtocolGRPCConnection = errors.New("Error grpc connection")
 

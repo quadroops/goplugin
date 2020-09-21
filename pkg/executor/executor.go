@@ -94,6 +94,11 @@ func (c *Container) PluginLength() int {
 	return len(c.plugins)
 }
 
+// IsPluginReady used to check if plugin has been running or not
+func (c *Container) IsPluginReady(name string) bool {
+	return c.Registry.Process.IsReady(name)
+}
+
 // Run used to start plugin's process
 func (c *Container) Run(name string, port int) error {
 	pluginMeta, exist := c.plugins[host.PluginName(name)]

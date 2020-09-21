@@ -5,8 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strconv"
 	"testing"
 
 	"github.com/quadroops/goplugin/pkg/caller/driver"
@@ -26,6 +29,17 @@ func createServerPing(resp interface{}, status int) *httptest.Server {
 	return server
 }
 
+func gethostport(addr string) (string, int) {
+	u, _ := url.Parse(addr)
+	log.Printf("Schema: %s", u.Scheme)
+	log.Printf("Host: %s", u.Host)
+	log.Printf("Port: %s", u.Port())
+
+	port, _ := strconv.Atoi(u.Port())
+	host := fmt.Sprintf("%s://%s", u.Scheme, u.Hostname())
+	return host, port
+}
+
 func TestRESTPingSuccess(t *testing.T) {
 	server := createServerPing(func() driver.JSONResponse {
 		data := driver.JSONData{
@@ -41,8 +55,10 @@ func TestRESTPingSuccess(t *testing.T) {
 	}(), http.StatusOK)
 	defer server.Close()
 
+	host, port := gethostport(server.URL)
 	rest := driver.NewREST(&driver.RESTOptions{
-		Addr: server.URL,
+		Addr: host,
+		Port: port,
 	})
 
 	resp, err := rest.Ping()
@@ -57,8 +73,10 @@ func TestPingFailed(t *testing.T) {
 	}(), http.StatusOK)
 	defer server.Close()
 
+	host, port := gethostport(server.URL)
 	rest := driver.NewREST(&driver.RESTOptions{
-		Addr: server.URL,
+		Addr: host,
+		Port: port,
 	})
 
 	_, err := rest.Ping()
@@ -72,8 +90,10 @@ func TestPingUnknownResponse(t *testing.T) {
 	}(), http.StatusInternalServerError)
 	defer server.Close()
 
+	host, port := gethostport(server.URL)
 	rest := driver.NewREST(&driver.RESTOptions{
-		Addr: server.URL,
+		Addr: host,
+		Port: port,
 	})
 
 	_, err := rest.Ping()
@@ -97,8 +117,10 @@ func TestExecSuccess(t *testing.T) {
 		return resp
 	}(), http.StatusAccepted)
 
+	host, port := gethostport(server.URL)
 	rest := driver.NewREST(&driver.RESTOptions{
-		Addr: server.URL,
+		Addr: host,
+		Port: port,
 	})
 
 	b, err := rest.Exec("rest.testing", []byte("test"))
@@ -115,8 +137,10 @@ func TestExecErrorContent(t *testing.T) {
 		return "test"
 	}(), http.StatusAccepted)
 
+	host, port := gethostport(server.URL)
 	rest := driver.NewREST(&driver.RESTOptions{
-		Addr: server.URL,
+		Addr: host,
+		Port: port,
 	})
 
 	_, err := rest.Exec("rest.testing", []byte("test"))
@@ -138,8 +162,10 @@ func TestExecErrorResponseInvalid(t *testing.T) {
 		return resp
 	}(), http.StatusAccepted)
 
+	host, port := gethostport(server.URL)
 	rest := driver.NewREST(&driver.RESTOptions{
-		Addr: server.URL,
+		Addr: host,
+		Port: port,
 	})
 
 	_, err := rest.Exec("rest.testing", []byte("test"))
@@ -161,8 +187,10 @@ func TestExecErrorStatusCode(t *testing.T) {
 		return resp
 	}(), http.StatusInternalServerError)
 
+	host, port := gethostport(server.URL)
 	rest := driver.NewREST(&driver.RESTOptions{
-		Addr: server.URL,
+		Addr: host,
+		Port: port,
 	})
 
 	_, err := rest.Exec("rest.testing", []byte("test"))

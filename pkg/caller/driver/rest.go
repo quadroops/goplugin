@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/quadroops/goplugin/pkg/caller"
@@ -22,11 +23,15 @@ const (
 
 	// Timeout used to waiting client response and cancel the request after limit timeout reached
 	Timeout = 5
+
+	// DefaultSchema used if given address doesn't give any http or https schemes
+	DefaultSchema = "http://"
 )
 
 // RESTOptions used as main option data
 type RESTOptions struct {
 	Addr    string
+	Port    int
 	Timeout int
 }
 
@@ -76,9 +81,17 @@ func (r *rest) request(method, endpoint string, payload *bytes.Buffer) (*http.Re
 		Timeout: timeout,
 	}
 
-	var req *http.Request
 	var err error
+	u, err := url.Parse(endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %q", errs.ErrProtocolRESTRequest, err)
+	}
 
+	if u.Scheme == "" || u.Scheme == "localhost" {
+		endpoint = fmt.Sprintf("%s%s", DefaultSchema, endpoint)
+	}
+
+	var req *http.Request
 	if payload != nil {
 		req, err = http.NewRequest(method, endpoint, payload)
 	} else {
@@ -94,7 +107,7 @@ func (r *rest) request(method, endpoint string, payload *bytes.Buffer) (*http.Re
 }
 
 func (r *rest) Ping() (string, error) {
-	endpoint := fmt.Sprintf("%s%s", r.option.Addr, PathPing)
+	endpoint := fmt.Sprintf("%s:%d%s", r.option.Addr, r.option.Port, PathPing)
 	resp, err := r.request("GET", endpoint, nil)
 	if err != nil {
 		return "", err
@@ -120,7 +133,7 @@ func (r *rest) Ping() (string, error) {
 }
 
 func (r *rest) Exec(cmdName string, payload []byte) ([]byte, error) {
-	endpoint := fmt.Sprintf("%s%s", r.option.Addr, PathExec)
+	endpoint := fmt.Sprintf("%s:%d%s", r.option.Addr, r.option.Port, PathExec)
 	p := JSONExecPayload{
 		Cmd:     cmdName,
 		Payload: hex.EncodeToString(payload),

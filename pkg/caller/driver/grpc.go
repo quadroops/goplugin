@@ -14,12 +14,13 @@ import (
 )
 
 // GrpcClientConnector used to create client connection
-type GrpcClientConnector func(addr string) (pbPlugin.PluginClient, error)
+type GrpcClientConnector func(addr string, port int) (pbPlugin.PluginClient, error)
 
 // DefaultGrpcClientConnector used as default client object to create grpc
 // connection
-func DefaultGrpcClientConnector(addr string) (pbPlugin.PluginClient, error) {
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+func DefaultGrpcClientConnector(addr string, port int) (pbPlugin.PluginClient, error) {
+	endpoint := fmt.Sprintf("%s:%d", addr, port)
+	conn, err := grpc.Dial(endpoint, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
@@ -31,6 +32,7 @@ func DefaultGrpcClientConnector(addr string) (pbPlugin.PluginClient, error) {
 // GrpcOptions used to save grpc options
 type GrpcOptions struct {
 	Addr      string
+	Port      int
 	Connector GrpcClientConnector
 }
 
@@ -53,7 +55,7 @@ func NewGRPC(opt *GrpcOptions) *GrpcObj {
 
 // Ping implement caller.Caller ping method
 func (g *GrpcObj) Ping() (string, error) {
-	client, err := g.opt.Connector(g.opt.Addr)
+	client, err := g.opt.Connector(g.opt.Addr, g.opt.Port)
 	if err != nil {
 		return "", fmt.Errorf("%w: %q", errs.ErrProtocolGRPCConnection, err)
 	}
@@ -68,7 +70,7 @@ func (g *GrpcObj) Ping() (string, error) {
 
 // Exec implement caller.Caller exec method
 func (g *GrpcObj) Exec(cmdName string, payload []byte) ([]byte, error) {
-	client, err := g.opt.Connector(g.opt.Addr)
+	client, err := g.opt.Connector(g.opt.Addr, g.opt.Port)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %q", errs.ErrProtocolGRPCConnection, err)
 	}

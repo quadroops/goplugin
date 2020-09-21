@@ -15,9 +15,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func makeGrpcOptions(addr string, connector driver.GrpcClientConnector) *driver.GrpcOptions {
+func makeGrpcOptions(addr string, port int, connector driver.GrpcClientConnector) *driver.GrpcOptions {
 	return &driver.GrpcOptions{
 		Addr:      addr,
+		Port:      port,
 		Connector: connector,
 	}
 }
@@ -31,7 +32,7 @@ func TestPingSuccess(t *testing.T) {
 		},
 	}, nil)
 
-	rpc := driver.NewGRPC(makeGrpcOptions("localhost:8080", func(addr string) (pbPlugin.PluginClient, error) {
+	rpc := driver.NewGRPC(makeGrpcOptions("localhost", 8080, func(addr string, port int) (pbPlugin.PluginClient, error) {
 		return client, nil
 	}))
 
@@ -41,7 +42,7 @@ func TestPingSuccess(t *testing.T) {
 }
 
 func TestPingErrorClient(t *testing.T) {
-	rpc := driver.NewGRPC(makeGrpcOptions("localhost:8080", func(addr string) (pbPlugin.PluginClient, error) {
+	rpc := driver.NewGRPC(makeGrpcOptions("localhost", 8080, func(addr string, port int) (pbPlugin.PluginClient, error) {
 		return nil, errors.New("error conn")
 	}))
 
@@ -55,7 +56,7 @@ func TestPingErrorResponse(t *testing.T) {
 	client := new(mocks.PluginClient)
 	client.On("Ping", context.Background(), &empty.Empty{}).Once().Return(&pbPlugin.PingResponse{}, errors.New("err response"))
 
-	rpc := driver.NewGRPC(makeGrpcOptions("localhost:8080", func(addr string) (pbPlugin.PluginClient, error) {
+	rpc := driver.NewGRPC(makeGrpcOptions("localhost", 8080, func(addr string, port int) (pbPlugin.PluginClient, error) {
 		return client, nil
 	}))
 
@@ -77,7 +78,7 @@ func TestGRPCExecSuccess(t *testing.T) {
 		},
 	}, nil)
 
-	rpc := driver.NewGRPC(makeGrpcOptions("localhost:8080", func(addr string) (pbPlugin.PluginClient, error) {
+	rpc := driver.NewGRPC(makeGrpcOptions("localhost", 8080, func(addr string, port int) (pbPlugin.PluginClient, error) {
 		return client, nil
 	}))
 
@@ -87,7 +88,7 @@ func TestGRPCExecSuccess(t *testing.T) {
 }
 
 func TestGRPCErrorClient(t *testing.T) {
-	rpc := driver.NewGRPC(makeGrpcOptions("localhost:8080", func(addr string) (pbPlugin.PluginClient, error) {
+	rpc := driver.NewGRPC(makeGrpcOptions("localhost", 8080, func(addr string, port int) (pbPlugin.PluginClient, error) {
 		return nil, errors.New("error conn")
 	}))
 
@@ -104,7 +105,7 @@ func TestGRPCErrorResponse(t *testing.T) {
 		Payload: hex.EncodeToString([]byte("hello")),
 	}).Once().Return(&pbPlugin.ExecResponse{}, errors.New("error response"))
 
-	rpc := driver.NewGRPC(makeGrpcOptions("localhost:8080", func(addr string) (pbPlugin.PluginClient, error) {
+	rpc := driver.NewGRPC(makeGrpcOptions("localhost", 8080, func(addr string, port int) (pbPlugin.PluginClient, error) {
 		return client, nil
 	}))
 
