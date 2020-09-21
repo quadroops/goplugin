@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Basic example using implementation using rest, [hello-rest](https://github.com/quadroops/goplugin/tree/master/examples/basic/hello-rest)
 
-[Unreleased]: https://github.com/quadroops/goplugin/compare/v1.0.0-alpha.1...HEAD
+[Unreleased]: https://github.com/quadroops/goplugin/compare/v1.0.0-alpha.2...HEAD
 [1.0.0-alpha.2]: https://github.com/quadroops/goplugin/compare/v1.0.0-alpha.1...v1.0.0-alpha.2
 [1.0.0-alpha.1]: https://github.com/quadroops/goplugin/compare/v1.0.0-alpha.0...v1.0.0-alpha.1
 [1.0.0-alpha.0]: https://github.com/quadroops/goplugin/releases/tag/v1.0.0-alpha.0
