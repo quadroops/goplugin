@@ -3,6 +3,7 @@ package goplugin
 import (
 	"github.com/quadroops/goplugin/internal/factory"
 	"github.com/quadroops/goplugin/pkg/discover"
+	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/host"
 	"github.com/quadroops/goplugin/pkg/process"
 )
@@ -38,6 +39,13 @@ func WithCustomProcess(runner process.Runner, processes process.ProcessesBuilder
 	}
 }
 
+// Map used to put a plugin and assign it with their spesific configurations
+func Map(pluginName string, conf *PluginConf) PluginMapper {
+	mapper := make(PluginMapper)
+	mapper[pluginName] = conf
+	return mapper
+}
+
 // New used to create new instance of GoPlugin, you can provide customization
 // here by giving goplugin.Option
 func New(hostName string, opts ...Option) *GoPlugin {
@@ -54,6 +62,30 @@ func New(hostName string, opts ...Option) *GoPlugin {
 	}
 
 	return gp
+}
+
+// SetupPlugin used to store host plugin's configurations
+func (g *GoPlugin) SetupPlugin(plugins ...PluginMapper) *GoPlugin {
+	mapper := make(PluginMapper)
+
+	// we're now need to merge all given plugin's config mapper
+	for _, plugin := range plugins {
+		for k, v := range plugin {
+			mapper[k] = v
+		}
+	}
+
+	g.hostPlugins = mapper
+	return g
+}
+
+// GetPluginConf used to get plugin's config
+func (g *GoPlugin) GetPluginConf(pluginName string) (*PluginConf, error) {
+	if conf, exist := g.hostPlugins[pluginName]; exist {
+		return conf, nil
+	}
+
+	return nil, errs.ErrPluginNotFound
 }
 
 // Build used to compile current host instance into consumed state of host.Builder

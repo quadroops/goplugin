@@ -20,6 +20,7 @@ type ProtocolOption struct {
 // GoPlugin used as main struct to store goplugin's state
 type GoPlugin struct {
 	hostName        string
+	hostPlugins     PluginMapper
 	configChecker   *discover.ConfigChecker
 	configParser    *discover.ConfigParser
 	processInstance *process.Instance
@@ -34,12 +35,12 @@ type PluginMapper map[string]*PluginConf
 
 // PluginConf used to store plugin's configurations
 type PluginConf struct {
-	Port     int
 	Protocol *ProtocolOption
 }
 
 // Registry used as wrapper of executor object
 type Registry struct {
-	hosts []*host.Builder
-	exec  *executor.Exec
+	hostPlugins []*GoPlugin
+	hosts       []*host.Builder
+	exec        *executor.Exec
 }
