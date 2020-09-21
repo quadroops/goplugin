@@ -1,5 +1,6 @@
 # Usages
 
+- `go get -u -v` to install and update all dependencies
 - Please build/compile our plugin's example inside `plugin` director (see their `README.md` there)
 - Copy file `conf.toml.tmpl` into `config.toml`
 - Re-configure the value inside `config.toml`
@@ -26,7 +27,7 @@ Note:
 - Each you have made some changes for the plugin, you have to get `md5sum` from the compiled binary
 - Put new md5 value inside your `config.toml`
 
-Command to get md5 value from a file
+To get md5 value from compiled binary file
 
 ```
 md5sum plugin

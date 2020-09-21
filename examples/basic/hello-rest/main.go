@@ -5,10 +5,12 @@ import (
 	"log"
 
 	"github.com/quadroops/goplugin"
+	"github.com/quadroops/goplugin/pkg/caller/driver"
 )
 
 var (
-	msg = flag.String("msg", "world", "Setup message to exec")
+	msg  = flag.String("msg", "world", "Setup message to exec")
+	port = flag.Int("port", 8080, "Setup custom port")
 )
 
 func init() {
@@ -16,34 +18,27 @@ func init() {
 }
 
 func main() {
-	mainHost := goplugin.New("main")
+	hostAPluginHelloConf := goplugin.PluginConf{
+		Protocol: &goplugin.ProtocolOption{
+			RESTOpts: &driver.RESTOptions{
+				Addr:    "localhost",
+				Port:    *port,
+				Timeout: 10, // in seconds
+			},
+		},
+	}
+
+	mainHost := goplugin.New("main").SetupPlugin(goplugin.Map("hello", &hostAPluginHelloConf))
+	pluggable, err := goplugin.Register(mainHost).Install()
+	if err != nil {
+		panic(err)
+	}
+
 	defer func() {
-		mainHost.GetProcessInstance().KillAll()
+		pluggable.KillPlugins()
 	}()
 
-	pluggable, err := goplugin.Register(mainHost)
-	if err != nil {
-		panic(err)
-	}
-
-	err = pluggable.Setup()
-	if err != nil {
-		panic(err)
-	}
-
-	plugins, err := pluggable.FromHost("main")
-	if err != nil {
-		panic(err)
-	}
-
-	err = plugins.Run("hello", 8081)
-	if err != nil {
-		panic(err)
-	}
-
-	pluginHello, err := plugins.Get("hello", 8081, goplugin.BuildProtocol(&goplugin.ProtocolOption{
-		RestAddr: "http://localhost",
-	}))
+	pluginHello, err := pluggable.Get("main", "hello")
 	if err != nil {
 		panic(err)
 	}
@@ -52,13 +47,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	log.Printf("Response ping: %s", resp)
 
 	respExec, err := pluginHello.Exec("hello.msg", []byte(*msg))
 	if err != nil {
 		panic(err)
 	}
-
 	log.Printf("Response exec: %s", respExec)
 }

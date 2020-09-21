@@ -4,66 +4,45 @@ import (
 	"flag"
 	"log"
 
-	plugin "github.com/quadroops/goplugin/proto/plugin"
-	"google.golang.org/grpc"
+	"github.com/quadroops/goplugin/pkg/caller/driver"
 
 	"github.com/quadroops/goplugin"
 )
 
 var (
-	addr = flag.String("addr", "", "Setup grpc plugin address")
+	addr = flag.String("addr", "localhost", "Setup grpc plugin address")
 	port = flag.Int("port", 8181, "Setup custom port")
 	msg  = flag.String("msg", "hello world from grpc", "Setup custom msg for exec")
 )
 
 func init() {
 	flag.Parse()
-	if *addr == "" {
-		panic("Need to define plugin grpc address")
-	}
 }
 
 func main() {
-	mainHost := goplugin.New("main")
+	hostAPluginHelloConf := goplugin.PluginConf{
+		Protocol: &goplugin.ProtocolOption{
+			GRPCOpts: &driver.GrpcOptions{
+				Addr: *addr,
+				Port: *port,
+			},
+		},
+	}
+
+	mainHost := goplugin.New("main").SetupPlugin(
+		goplugin.Map("hello", &hostAPluginHelloConf),
+	)
+
+	pluggable, err := goplugin.Register(mainHost).Install()
+	if err != nil {
+		panic(err)
+	}
+
 	defer func() {
-		mainHost.GetProcessInstance().KillAll()
+		pluggable.KillPlugins()
 	}()
 
-	pluggable, err := goplugin.Register(mainHost)
-	if err != nil {
-		panic(err)
-	}
-
-	err = pluggable.Setup()
-	if err != nil {
-		panic(err)
-	}
-
-	plugins, err := pluggable.FromHost("main")
-	if err != nil {
-		panic(err)
-	}
-
-	err = plugins.Run("hello", *port)
-	if err != nil {
-		panic(err)
-	}
-
-	// used for driver.MakeClient
-	client := func() (plugin.PluginClient, error) {
-		conn, err := grpc.Dial(*addr, grpc.WithInsecure())
-		if err != nil {
-			return nil, err
-		}
-
-		client := plugin.NewPluginClient(conn)
-		return client, nil
-	}
-
-	pluginHello, err := plugins.Get("hello", *port, goplugin.BuildProtocol(&goplugin.ProtocolOption{
-		GrpcClient: client,
-	}))
-
+	pluginHello, err := pluggable.Get("main", "hello")
 	if err != nil {
 		panic(err)
 	}
@@ -72,13 +51,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	log.Printf("Response ping: %s", resp)
 
 	respExec, err := pluginHello.Exec("hello.msg", []byte(*msg))
 	if err != nil {
 		panic(err)
 	}
-
 	log.Printf("Response exec: %s", respExec)
 }
