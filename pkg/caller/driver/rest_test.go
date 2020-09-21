@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/caller/driver"
+	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/stretchr/testify/assert"
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -41,7 +41,10 @@ func TestRESTPingSuccess(t *testing.T) {
 	}(), http.StatusOK)
 	defer server.Close()
 
-	rest := driver.NewREST(server.URL, nil)
+	rest := driver.NewREST(&driver.RESTOptions{
+		Addr: server.URL,
+	})
+
 	resp, err := rest.Ping()
 	assert.NoError(t, err)
 	assert.Equal(t, "pong", resp)
@@ -50,11 +53,14 @@ func TestRESTPingSuccess(t *testing.T) {
 
 func TestPingFailed(t *testing.T) {
 	server := createServerPing(func() interface{} {
-		return "test" 
+		return "test"
 	}(), http.StatusOK)
 	defer server.Close()
 
-	rest := driver.NewREST(server.URL, nil)
+	rest := driver.NewREST(&driver.RESTOptions{
+		Addr: server.URL,
+	})
+
 	_, err := rest.Ping()
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrPluginCall))
@@ -62,11 +68,14 @@ func TestPingFailed(t *testing.T) {
 
 func TestPingUnknownResponse(t *testing.T) {
 	server := createServerPing(func() interface{} {
-		return nil 
+		return nil
 	}(), http.StatusInternalServerError)
 	defer server.Close()
 
-	rest := driver.NewREST(server.URL, nil)
+	rest := driver.NewREST(&driver.RESTOptions{
+		Addr: server.URL,
+	})
+
 	_, err := rest.Ping()
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrPluginPing))
@@ -86,9 +95,12 @@ func TestExecSuccess(t *testing.T) {
 		}
 
 		return resp
-	}(), http.StatusAccepted)	
+	}(), http.StatusAccepted)
 
-	rest := driver.NewREST(server.URL, nil)
+	rest := driver.NewREST(&driver.RESTOptions{
+		Addr: server.URL,
+	})
+
 	b, err := rest.Exec("rest.testing", []byte("test"))
 	assert.NoError(t, err)
 
@@ -100,10 +112,13 @@ func TestExecSuccess(t *testing.T) {
 
 func TestExecErrorContent(t *testing.T) {
 	server := createServerPing(func() interface{} {
-		return "test" 
-	}(), http.StatusAccepted)	
+		return "test"
+	}(), http.StatusAccepted)
 
-	rest := driver.NewREST(server.URL, nil)
+	rest := driver.NewREST(&driver.RESTOptions{
+		Addr: server.URL,
+	})
+
 	_, err := rest.Exec("rest.testing", []byte("test"))
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrPluginCall))
@@ -121,9 +136,12 @@ func TestExecErrorResponseInvalid(t *testing.T) {
 		}
 
 		return resp
-	}(), http.StatusAccepted)	
+	}(), http.StatusAccepted)
 
-	rest := driver.NewREST(server.URL, nil)
+	rest := driver.NewREST(&driver.RESTOptions{
+		Addr: server.URL,
+	})
+
 	_, err := rest.Exec("rest.testing", []byte("test"))
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrCastInterface))
@@ -141,9 +159,12 @@ func TestExecErrorStatusCode(t *testing.T) {
 		}
 
 		return resp
-	}(), http.StatusInternalServerError)	
+	}(), http.StatusInternalServerError)
 
-	rest := driver.NewREST(server.URL, nil)
+	rest := driver.NewREST(&driver.RESTOptions{
+		Addr: server.URL,
+	})
+
 	_, err := rest.Exec("rest.testing", []byte("test"))
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrPluginExec))

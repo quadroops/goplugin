@@ -24,8 +24,9 @@ const (
 	Timeout = 5
 )
 
-// RESTOption used as main option data
-type RESTOption struct {
+// RESTOptions used as main option data
+type RESTOptions struct {
+	Addr    string
 	Timeout int
 }
 
@@ -47,14 +48,13 @@ type JSONExecPayload struct {
 }
 
 type rest struct {
-	address string
-	option  *RESTOption
+	option *RESTOptions
 }
 
 // NewREST used to create new instance and return Caller interface
-func NewREST(addr string, o *RESTOption) caller.Caller {
-	var opt *RESTOption
-	opt = &RESTOption{
+func NewREST(o *RESTOptions) caller.Caller {
+	var opt *RESTOptions
+	opt = &RESTOptions{
 		Timeout: Timeout,
 	}
 
@@ -67,7 +67,7 @@ func NewREST(addr string, o *RESTOption) caller.Caller {
 		opt.Timeout = Timeout
 	}
 
-	return &rest{addr, opt}
+	return &rest{opt}
 }
 
 func (r *rest) request(method, endpoint string, payload *bytes.Buffer) (*http.Response, error) {
@@ -94,7 +94,7 @@ func (r *rest) request(method, endpoint string, payload *bytes.Buffer) (*http.Re
 }
 
 func (r *rest) Ping() (string, error) {
-	endpoint := fmt.Sprintf("%s%s", r.address, PathPing)
+	endpoint := fmt.Sprintf("%s%s", r.option.Addr, PathPing)
 	resp, err := r.request("GET", endpoint, nil)
 	if err != nil {
 		return "", err
@@ -120,7 +120,7 @@ func (r *rest) Ping() (string, error) {
 }
 
 func (r *rest) Exec(cmdName string, payload []byte) ([]byte, error) {
-	endpoint := fmt.Sprintf("%s%s", r.address, PathExec)
+	endpoint := fmt.Sprintf("%s%s", r.option.Addr, PathExec)
 	p := JSONExecPayload{
 		Cmd:     cmdName,
 		Payload: hex.EncodeToString(payload),

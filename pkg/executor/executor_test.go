@@ -53,7 +53,7 @@ const (
 		exec = "./tmp/test"
     	exec_file = "./tmp/test"
 		exec_time = 5
-		protocol_type = "grpc"
+		comm_type = "grpc"
 		
 		[plugins.name_2]
 		author = "author_2|author_2@gmail.com"
@@ -61,7 +61,7 @@ const (
 		exec = "./tmp/test"
     	exec_file = "./tmp/test"
 		exec_time = 10
-		protocol_type = "grpc"
+		comm_type = "grpc"
 		
 		[plugins.name_3]
 		author = "author_3|author_3@gmail.com"
@@ -69,7 +69,7 @@ const (
 		exec = "./tmp/test"
     	exec_file = "./tmp/test"
 		exec_time = 20
-		protocol_type = "unknown"
+		comm_type = "unknown"
 		
 	# Used as service registries
 	# A service is an application that consume / using plugins
