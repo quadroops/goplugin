@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [example] Adding implementation using elixir for rest & grpc
 - Adding go package's documentation
 
+## [1.0.0-alpha.2] - 2020-09-21
+### Added
+- Refactor main factory build to simplify initiation process
+- Update `examples`
+
 ## [1.0.0-alpha.1] - 2020-09-19
 ### Added
 - Basic example using implementation using grpc, [hello-grpc](https://github.com/quadroops/goplugin/tree/master/examples/basic/hello-grpc)
@@ -19,5 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic example using implementation using rest, [hello-rest](https://github.com/quadroops/goplugin/tree/master/examples/basic/hello-rest)
 
 [Unreleased]: https://github.com/quadroops/goplugin/compare/v1.0.0-alpha.1...HEAD
+[1.0.0-alpha.2]: https://github.com/quadroops/goplugin/compare/v1.0.0-alpha.1...v1.0.0-alpha.2
 [1.0.0-alpha.1]: https://github.com/quadroops/goplugin/compare/v1.0.0-alpha.0...v1.0.0-alpha.1
 [1.0.0-alpha.0]: https://github.com/quadroops/goplugin/releases/tag/v1.0.0-alpha.0
