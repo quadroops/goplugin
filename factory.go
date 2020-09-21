@@ -7,18 +7,6 @@ import (
 	"github.com/quadroops/goplugin/pkg/process"
 )
 
-// GoPlugin .
-type GoPlugin struct {
-	hostName        string
-	configChecker   *discover.ConfigChecker
-	configParser    *discover.ConfigParser
-	processInstance *process.Instance
-	identityChecker host.IdentityChecker
-}
-
-// Option used to customize default objects
-type Option func(*GoPlugin)
-
 // WithCustomConfigChecker used to customize config checker, the parameter
 // must be implement discover.Checker
 func WithCustomConfigChecker(adapters ...discover.Checker) Option {

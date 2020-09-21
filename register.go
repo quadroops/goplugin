@@ -10,12 +10,6 @@ import (
 	"github.com/quadroops/goplugin/pkg/host"
 )
 
-// Registry used as wrapper of executor object
-type Registry struct {
-	hosts []*host.Builder
-	exec  *executor.Exec
-}
-
 // Register used to collect available hosts and run
 // executor behind it
 func Register(hostPlugins ...*GoPlugin) (*Registry, error) {
