@@ -52,93 +52,64 @@ Current supported communication protocols:
 Basic usages:
 
 ```go
-package main
+// need to save plugin's configuration ports
+// assume this plugin using rest
+hostAPlugin1Conf := goplugin.PluginConf{
+	Protocol: &goplugin.ProtocolOption{
+		RESTOpts: &driver.RESTOptions{
+			Addr: "localhost",
+			Port: 8080,
+			Timeout: 10, // in seconds
+		}
+	}
+}
 
-import (
-    "log"
+// assume this plugin using grpc
+hostAPlugin2Conf := goplugin.PluginConf{
+	Protocol: &goplugin.ProtocolOption{
+		GRPCOpts: &driver.GRPCOptions{
+			Addr: "host",
+			Port: 8081,
+		}
+	}
+}
 
-    "github.com/quadroops/goplugin"
+// each hosts will have to manage their own plugin's configurations
+// we need to map available plugins to their specific configurations
+hostA := goplugin.New("hostA").SetupPlugin(
+	goplugin.Map("plugin1", hostAPlugin1PConf), 
+	goplugin.Map("plugin2", hostAPlugin2Conf),
 )
 
-func main() {
-    hostA := goplugin.New("hostA")
-    hostB := goplugin.New("hostB")
-    
-    // stop all available plugins, when main system is shutting down
-    defer func() {
-        hostA.GetPluginInstance().KillAll()
-        hostB.GetPluginInstance().KillAll()
-    }()
-
-    pluggable, err := goplugin.Register(
-        hostA,
-        hostB,
-    )
-    if err != nil {
-        panic(err)
-    }
-
-    err = pluggable.Setup()
-    if err != nil {
-        panic(err)
-    }
-
-    aPlugins, err := pluggable.FromHost("hostA")
-    if err != nil {
-        panic(err)
-    }
-
-    bPlugins, err := pluggable.FromHost("hostB")
-    if err != nil {
-        panic(err)
-    }
-
-    err = aPlugins.Run("plugin1", 8081)
-    if err != nil {
-        panic(err)
-    }
-
-    err = bPlugins.Run("plugin2", 8082)
-    if err != nil {
-        panic(err)
-    }
-
-    // get plugin's instance, you dont need to decide which protocol will be used 
-    // just use our helper, or even you can create your own helper as long as, your helper
-    // function follow caller.Build type
-    //
-    // after get your plugin's instance, now you can communicate with your plugin via REST/GRPC
-    plugin1, err := aPlugins.Get(
-        "plugin1", 
-        8081, 
-        goplugin.BuildProtocol(&goplugin.ProtocolOption{
-            RestAddr: "http://localhost",
-            RestTimeout: 10, // this configuration is optional
-        })
-    )
-
-    if err != nil {
-        panic(err)
-    }
-
-    // call plugin's ping method
-    respPing, err := plugin1.Ping()
-    if err != nil {
-        panic(err)
-    }
-
-    log.Printf("Resp: %s", respPing)
-
-    // call plugin's exec method
-    respExec, err := plugin1.Exec("test.command", []byte("hello"))
-    if err != nil {
-        panic(err)
-    }
-
-    log.Printf("Resp: %s", respExec)
-
-    // you can use a same ways for bPlugins
+// you can register multiple hosts here
+// and whel Install method called, it will install all plugins from
+// all registered hosts
+pluggable, err := goplugin.Register(hostA).Install()
+if err != nil {
+	panic(err)
 }
+
+defer func() {
+	// for each successfull installed hosts need to shutdown
+	// their plugins if something bad happened
+	pluggable.KillPlugins()
+}
+
+// when load a plugin, you need to specify from which host
+// each host will have their own plugin registries
+// if plugin not started yet, it should also run plugin via os subprocess
+plugin1, err := pluggable.Get("hostA", "plugin1")
+if err != nil {
+	panic(err)
+}
+
+// start working with available plugins
+respPing, err := plugin1.Ping()
+if err != nil {
+	panic(err)
+}
+
+log.Printf("Response ping: %s", respPing)
 ```
 
 Assume you need to customize config `Checker` and `Parser`, imagine you want to using a database
@@ -160,24 +131,52 @@ func MongoParse(content []byte) (*discover.PluginConfig, error) {
     // map configurations to discover.PluginConfig
 }
 
+// need to save plugin's configuration ports
+// assume this plugin using rest
+hostAPlugin1Conf := goplugin.PluginConf{
+	Protocol: &goplugin.ProtocolOption{
+		RESTOpts: &driver.RESTOptions{
+			Addr: "localhost",
+			Port: 8080,
+			Timeout: 10, // in seconds
+		}
+	}
+}
+
 hostA := goplugin.New("hostA", 
     goplugin.WithCustomConfigChecker(Check), 
     goplugin.WithCustomConfigParser(MongoSourceReader, MongoParse),
-)
+).SetupPlugin(goplugin.Map("plugin1", hostAPlugin1PConf))
 
-// stop all available plugins, when main system is shutting down
-defer func() {
-    hostA.GetPluginInstance().KillAll()
-}()
-
-pluggable := goplugin.Register(
-    hostA,
-)
-
-err = pluggable.Setup()
+// you can register multiple hosts here
+// and whel Install method called, it will install all plugins from
+// all registered hosts
+pluggable, err := goplugin.Register(hostA).Install()
 if err != nil {
-    panic(err)
+	panic(err)
 }
+
+defer func() {
+	// for each successfull installed hosts need to shutdown
+	// their plugins if something bad happened
+	pluggable.KillPlugins()
+}
+
+// when load a plugin, you need to specify from which host
+// each host will have their own plugin registries
+// if plugin not started yet, it should also run plugin via os subprocess
+plugin1, err := pluggable.Get("hostA", "plugin1")
+if err != nil {
+	panic(err)
+}
+
+// start working with available plugins
+respPing, err := plugin1.Ping()
+if err != nil {
+	panic(err)
+}
+
+log.Printf("Response ping: %s", respPing)
 ```
 
 Customizated components available for:
