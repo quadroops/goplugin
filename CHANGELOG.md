@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adding go package's documentation
 
 ## [1.0.0-alpha.2] - 2020-09-21
-### Added
+### Changed 
 - Refactor main factory build to simplify initiation process
 - Update `examples`
 
