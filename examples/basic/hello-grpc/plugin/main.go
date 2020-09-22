@@ -46,7 +46,7 @@ func (h *handler) Exec(ctx context.Context, req *plugin.ExecRequest) (*plugin.Ex
 
 	return &plugin.ExecResponse{
 		Status: "success",
-		Data: &plugin.Data{
+		Data: &plugin.DataRPC{
 			Response: req.GetPayload(),
 		},
 	}, nil
