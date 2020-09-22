@@ -106,15 +106,18 @@ func (c *Container) Run(name string, port int) error {
 		return errs.ErrPluginNotFound
 	}
 
-	chanPlugin, err := c.Registry.Process.Run(
+	pluginCh, err := c.Registry.Process.Run(
 		pluginMeta.ExecTime,
 		name,
 		pluginMeta.ExecPath,
 		port,
 		pluginMeta.ExecArgs...)
 
-	c.Registry.Process.Watch(chanPlugin, err)
-	return err
+	if err != nil {
+		return err
+	}
+
+	return c.Registry.Process.RegisterNewProcess(pluginCh)
 }
 
 // Get used to create plugin's instance

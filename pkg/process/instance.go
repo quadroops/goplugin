@@ -28,6 +28,12 @@ func (i *Instance) IsReady(name string) bool {
 	return i.processes.IsExist(name)
 }
 
+// RegisterNewProcess put new subprocess to process registry
+func (i *Instance) RegisterNewProcess(plugin <-chan Plugin) error {
+	p := <-plugin
+	return i.processes.Add(p)
+}
+
 // Run used to start new subprocess
 func (i *Instance) Run(toWait int, name, command string, port int, args ...string) (<-chan Plugin, error) {
 	if i.processes.IsExist(name) {
@@ -35,14 +41,6 @@ func (i *Instance) Run(toWait int, name, command string, port int, args ...strin
 	}
 
 	return i.runner.Run(toWait, name, command, port, args...)
-}
-
-// Watch used to put current running plugin to list of rxgo.Item
-func (i *Instance) Watch(p <-chan Plugin, err error) {
-	if p != nil && err == nil {
-		plugin := <-p
-		i.processes.Add(plugin)
-	}
 }
 
 // Kill used to kill individual plugin's process

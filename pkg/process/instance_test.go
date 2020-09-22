@@ -5,12 +5,13 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/stretchr/testify/mock"
+
 	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/process"
 	"github.com/quadroops/goplugin/pkg/process/mocks"
 	"github.com/reactivex/rxgo/v2"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func createMockPlugin(name string) process.Plugin {
@@ -55,21 +56,6 @@ func TestRunErrorExist(t *testing.T) {
 	_, err := p.Run(1, "test", "test", 1001)
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrPluginStarted))
-}
-
-func TestWatchSuccess(t *testing.T) {
-	plugin := createMockPlugin("test")
-	pluginCh := createMockChanPlugin(plugin)
-
-	runner := new(mocks.Runner)
-	runner.On("Run", 1, "test", "test", 1001).Once().Return(pluginCh, nil)
-
-	processes := new(mocks.ProcessesBuilder)
-	processes.On("IsExist", "test").Once().Return(false)
-	processes.On("Add", mock.Anything).Once().Return(nil)
-
-	p := process.New(runner, processes)
-	p.Watch(p.Run(1, "test", "test", 1001))
 }
 
 func TestKillSuccess(t *testing.T) {
@@ -122,4 +108,17 @@ func TestKillAllError(t *testing.T) {
 	p := process.New(runner, processes)
 	errs := p.KillAll()
 	assert.Len(t, errs, 1)
+}
+func TestRegisterNewProcess(t *testing.T) {
+	plugin := createMockPlugin("test")
+	pluginCh := createMockChanPlugin(plugin)
+
+	runner := new(mocks.Runner)
+	processes := new(mocks.ProcessesBuilder)
+	processes.On("IsExist", "test").Once().Return(true)
+	processes.On("Add", mock.Anything).Once().Return(nil)
+
+	p := process.New(runner, processes)
+	err := p.RegisterNewProcess(pluginCh)
+	assert.NoError(t, err)
 }
