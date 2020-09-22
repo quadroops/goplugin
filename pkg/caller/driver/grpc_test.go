@@ -2,7 +2,6 @@ package driver_test
 
 import (
 	"context"
-	"encoding/hex"
 	"errors"
 	"testing"
 
@@ -70,11 +69,11 @@ func TestGRPCExecSuccess(t *testing.T) {
 	client := new(mocks.PluginClient)
 	client.On("Exec", context.Background(), &pbPlugin.ExecRequest{
 		Command: "test.command",
-		Payload: hex.EncodeToString([]byte("hello")),
+		Payload: []byte("hello"),
 	}).Once().Return(&pbPlugin.ExecResponse{
 		Status: "success",
-		Data: &pbPlugin.Data{
-			Response: hex.EncodeToString([]byte("world")),
+		Data: &pbPlugin.DataRPC{
+			Response: []byte("world"),
 		},
 	}, nil)
 
@@ -102,7 +101,7 @@ func TestGRPCErrorResponse(t *testing.T) {
 	client := new(mocks.PluginClient)
 	client.On("Exec", context.Background(), &pbPlugin.ExecRequest{
 		Command: "test.command",
-		Payload: hex.EncodeToString([]byte("hello")),
+		Payload: []byte("hello"),
 	}).Once().Return(&pbPlugin.ExecResponse{}, errors.New("error response"))
 
 	rpc := driver.NewGRPC(makeGrpcOptions("localhost", 8080, func(addr string, port int) (pbPlugin.PluginClient, error) {

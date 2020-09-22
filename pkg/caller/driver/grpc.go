@@ -2,15 +2,13 @@ package driver
 
 import (
 	"context"
-	"encoding/hex"
 	"fmt"
 
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/quadroops/goplugin/pkg/errs"
-
 	pbPlugin "github.com/quadroops/goplugin/proto/plugin"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // GrpcClientConnector used to create client connection
@@ -77,12 +75,12 @@ func (g *GrpcObj) Exec(cmdName string, payload []byte) ([]byte, error) {
 
 	resp, err := client.Exec(context.Background(), &pbPlugin.ExecRequest{
 		Command: cmdName,
-		Payload: hex.EncodeToString(payload),
+		Payload: payload,
 	})
 
 	if err != nil {
 		return nil, fmt.Errorf("%w: %q", errs.ErrProtocolGRPCResponse, err)
 	}
 
-	return hex.DecodeString(resp.GetData().GetResponse())
+	return resp.GetData().GetResponse(), nil
 }
