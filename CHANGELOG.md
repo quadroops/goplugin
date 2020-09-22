@@ -5,9 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- [example] Adding implementation using dart for rest & grpc
-- [example] Adding implementation using elixir for rest & grpc
-- Adding go package's documentation
+- `removed` : Remove `Watch` from api function
+- `changed` : Change proto payload from string to bytes
+- `changed` : Update examples `hello-grpc` & `hello-rest`
+- `added`   : Adding supervisor to monitor os subprocesses
+- `added`   : Adding go package's documentation
+- `example` : Adding implementation using dart for rest & grpc
+- `example` : Adding implementation using elixir for rest & grpc
 
 ## [1.0.0-alpha.2] - 2020-09-21
 ### Changed 
