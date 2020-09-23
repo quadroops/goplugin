@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - `removed` : Remove `Watch` from api function
+- `added` : Adding `Supervisor` to check plugin's availability and restart it
 - `changed` : Change proto payload from string to bytes
 - `changed` : Update examples `hello-grpc` & `hello-rest`
 
