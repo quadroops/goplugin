@@ -14,7 +14,7 @@ Please refer to our [Wiki](https://github.com/quadroops/goplugin/wiki)
 
 ## Examples
 
-Please refer to our [examples](https://github.com/quadroops/goplugin)
+Please refer to our [examples](https://github.com/quadroops/goplugin/tree/master/examples)
 
 ---
 
