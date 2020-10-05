@@ -34,10 +34,13 @@ func TestListenSuccess(t *testing.T) {
 	d := new(mocks.Driver)
 	d.On("Watch").Once().Return(c)
 	d.On("OnError", mock.Anything, mock.Anything, mock.Anything).Once().Run(func(args mock.Arguments) {
+		p, ok := args[0].(*supervisor.Payload)
+		assert.True(t, ok)
+
 		for _, arg := range args {
 			handler, ok := arg.(supervisor.OnErrorHandler)
 			if ok {
-				handler(payload)
+				handler(p)
 			}
 		}
 	})
@@ -56,6 +59,6 @@ func TestListenSuccess(t *testing.T) {
 	}
 
 	s := supervisor.New(d, handler1, handler2)
-	s.Start().Listen()
+	s.Start().Handle()
 	time.Sleep(1 * time.Second)
 }

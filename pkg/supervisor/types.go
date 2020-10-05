@@ -12,5 +12,5 @@ type OnErrorHandler func(payload *Payload)
 // Driver used as main interface to run supervisor activities
 type Driver interface {
 	Watch() <-chan *Payload
-	OnError(event <-chan *Payload, handlers ...OnErrorHandler)
+	OnError(event *Payload, handlers ...OnErrorHandler)
 }

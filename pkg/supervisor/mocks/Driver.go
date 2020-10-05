@@ -13,7 +13,7 @@ type Driver struct {
 }
 
 // OnError provides a mock function with given fields: event, handlers
-func (_m *Driver) OnError(event <-chan *supervisor.Payload, handlers ...supervisor.OnErrorHandler) {
+func (_m *Driver) OnError(event *supervisor.Payload, handlers ...supervisor.OnErrorHandler) {
 	_va := make([]interface{}, len(handlers))
 	for _i := range handlers {
 		_va[_i] = handlers[_i]

@@ -18,13 +18,13 @@ func (r *Runner) Start() *Runner {
 	return r
 }
 
-// Listen used to listen to error events, by default we put main process to listening events
+// Handle used to listen to error events, by default we put main process to listening events
 // inside a goroutine
-func (r *Runner) Listen() {
+func (r *Runner) Handle() {
 	go func() {
 		for p := range r.errorEvent {
 			if len(r.errorHandlers) >= 1 && p != nil {
-				r.driver.OnError(r.errorEvent, r.errorHandlers...)
+				r.driver.OnError(p, r.errorHandlers...)
 			}
 		}
 	}()
