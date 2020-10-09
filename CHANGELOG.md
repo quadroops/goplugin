@@ -5,10 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- `removed` : Remove `Watch` from api function
-- `added` : Adding `Supervisor` to check plugin's availability and restart it
-- `changed` : Change proto payload from string to bytes
-- `changed` : Update examples `hello-grpc` & `hello-rest`
+
+## [1.0.0-alpha.3] - 2020-10-09
+### Removed
+- Remove watch as unused api function
+- Remove primitive on process registry, move it to process builder
+
+### Added
+- Adding supervisor 
+- Adding auto retry mechanism when calling to plugin 
+- Adding new example for supervisor
+
+### Changed
+- Change proto payload from string to bytes
+- Update examples `hello-grpc` & `hello-rest`
 
 ## [1.0.0-alpha.2] - 2020-09-21
 ### Changed 
@@ -25,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic example using implementation using rest, [hello-rest](https://github.com/quadroops/goplugin/tree/master/examples/basic/hello-rest)
 
 [Unreleased]: https://github.com/quadroops/goplugin/compare/v1.0.0-alpha.2...HEAD
+[1.0.0-alpha.3]: https://github.com/quadroops/goplugin/compare/v1.0.0-alpha.2...v1.0.0-alpha.3
 [1.0.0-alpha.2]: https://github.com/quadroops/goplugin/compare/v1.0.0-alpha.1...v1.0.0-alpha.2
 [1.0.0-alpha.1]: https://github.com/quadroops/goplugin/compare/v1.0.0-alpha.0...v1.0.0-alpha.1
 [1.0.0-alpha.0]: https://github.com/quadroops/goplugin/releases/tag/v1.0.0-alpha.0
