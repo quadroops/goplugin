@@ -1,0 +1,39 @@
+[meta]
+version = "1.0.0"
+author = "hiraq|hiraq.dev@gmail.com"
+
+# global configurations
+[settings]
+debug = true 
+
+# Used as main plugin registries
+#
+# a plugin should provide basic five informations about their self
+#
+# - Author
+# - Md5Sum.  To make sure that we should not be able to exec a plugin which will harm us
+# - Exec path
+# - Exec start time. Used to wait a plugin to start processes until they are ready to consume by caller
+# - Communication type (grpc/rest)
+#
+# Each of registered plugin MUST have a unique's name
+[plugins]
+
+    [plugins.hello]
+    author = "author_1|author_1@gmail.com"
+    md5 = "<set_md5_value>"
+    exec = "/path/to/executed/binary"
+    exec_args = ["-port", "8181"]
+    exec_file = "/path/to/executed/binary"
+    exec_time = 5
+    comm_type = "rest"
+    comm_port = "8181"
+    
+# Used as service registries
+# A service is an application that consume / using plugins
+# They are not allowed to access a plugin that not registered to service's plugin registries
+[hosts]
+
+    [hosts.main]
+    plugins = ["hello"]
+    
