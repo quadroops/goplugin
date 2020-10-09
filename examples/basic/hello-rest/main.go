@@ -38,7 +38,7 @@ func main() {
 		pluggable.KillPlugins()
 	}()
 
-	pluginHello, err := pluggable.Get("main", "hello")
+	pluginHello, err := pluggable.GetCaller("main", "hello")
 	if err != nil {
 		panic(err)
 	}

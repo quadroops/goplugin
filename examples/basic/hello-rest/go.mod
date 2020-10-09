@@ -4,11 +4,14 @@ go 1.14
 
 require (
 	github.com/golang/protobuf v1.4.2 // indirect
+	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
-	github.com/quadroops/goplugin v0.0.0-20200906172155-429045f2dcf6
+	github.com/quadroops/goplugin v1.0.0-alpha.3
 	github.com/reactivex/rxgo/v2 v2.1.0 // indirect
+	github.com/spf13/cobra v1.0.0 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.6.1 // indirect
+	github.com/vektra/mockery v1.1.2 // indirect
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73 // indirect
 	golang.org/x/sys v0.0.0-20200917073148-efd3b9a0ff20 // indirect
 	golang.org/x/text v0.3.3 // indirect

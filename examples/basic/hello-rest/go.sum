@@ -109,6 +109,8 @@ github.com/prometheus/procfs v0.0.0-20190507164030-5867b95ac084/go.mod h1:TjEm7z
 github.com/prometheus/tsdb v0.7.1/go.mod h1:qhTCs0VvXwvX/y3TZrWD7rabWM+ijKTux40TwIPHuXU=
 github.com/quadroops/goplugin v0.0.0-20200906172155-429045f2dcf6 h1:1JV8ehnzNiD+oKzchMnVS9Df7+IGdAvb042a2AmxT90=
 github.com/quadroops/goplugin v0.0.0-20200906172155-429045f2dcf6/go.mod h1:BpasWFwAqB+5/SkvnMoDbCtlmXKKAj1LiapF0IZMvNI=
+github.com/quadroops/goplugin v1.0.0-alpha.3 h1:tZisTwgRUkjVCjUYjmMENYq1TU2VgrCaf66jpzGEhp4=
+github.com/quadroops/goplugin v1.0.0-alpha.3/go.mod h1:uKoDaQkoiDA2pUPg0zxCOUl1mVdOzJrcRFIv2fZgrjg=
 github.com/reactivex/rxgo/v2 v2.0.1 h1:BWnkOfj4nYkeHOWi56ztXSxFuzuBCigrAOBuAOc4HPg=
 github.com/reactivex/rxgo/v2 v2.0.1/go.mod h1:HeaTW1/VQnad+xq1IqXnBjwsVHkJHriBNOApQVD5XfA=
 github.com/reactivex/rxgo/v2 v2.1.0 h1:056NTMl1fjU20TjrplhTceKaD6905NzUg/6lCMUc52g=
