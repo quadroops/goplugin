@@ -60,7 +60,7 @@ func (g *GrpcObj) Ping() (string, error) {
 
 	resp, err := client.Ping(context.Background(), &emptypb.Empty{})
 	if err != nil {
-		return "", fmt.Errorf("%w: %q", errs.ErrProtocolGRPCResponse, err)
+		return "", fmt.Errorf("%w: %q", errs.ErrPluginPing, err)
 	}
 
 	return resp.GetData().GetResponse(), nil
@@ -79,7 +79,7 @@ func (g *GrpcObj) Exec(cmdName string, payload []byte) ([]byte, error) {
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("%w: %q", errs.ErrProtocolGRPCResponse, err)
+		return nil, fmt.Errorf("%w: %q", errs.ErrPluginExec, err)
 	}
 
 	return resp.GetData().GetResponse(), nil

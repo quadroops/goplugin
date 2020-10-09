@@ -61,6 +61,6 @@ var (
 	// ErrProtocolGRPCConnection used for an error grpc connection
 	ErrProtocolGRPCConnection = errors.New("Error grpc connection")
 
-	// ErrProtocolGRPCResponse used when an error on response
-	ErrProtocolGRPCResponse = errors.New("Error grpc response")
+	// ErrSupervisorNoHandlers used when there are no error handlers registered for supervisor
+	ErrSupervisorNoHandlers = errors.New("No supervisor error handlers defined")
 )

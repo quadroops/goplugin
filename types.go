@@ -1,11 +1,14 @@
 package goplugin
 
 import (
+	"time"
+
 	"github.com/quadroops/goplugin/pkg/caller/driver"
 	"github.com/quadroops/goplugin/pkg/discover"
 	"github.com/quadroops/goplugin/pkg/executor"
 	"github.com/quadroops/goplugin/pkg/host"
 	"github.com/quadroops/goplugin/pkg/process"
+	"github.com/quadroops/goplugin/pkg/supervisor"
 )
 
 // ProtocolOption used to configure rest or grpc options
@@ -44,3 +47,24 @@ type Registry struct {
 	hosts       []*host.Builder
 	exec        *executor.Exec
 }
+
+// HostPlugins used to store all plugins from some host
+type HostPlugins struct {
+	Host    string
+	Plugins host.Plugins
+}
+
+// PluginSupervisor is main struct used to store supervisor's configurations
+type PluginSupervisor struct {
+	pluggable   *Registry
+	interval    int
+	ticker      *time.Ticker
+	tickerDone  chan bool
+	hostPlugins []*HostPlugins
+	runner      *supervisor.Runner
+	driver      supervisor.Driver
+	handlers    []supervisor.OnErrorHandler
+}
+
+// PluginSupervisorOption used to customize supervisor values
+type PluginSupervisorOption func(*PluginSupervisor)

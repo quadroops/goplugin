@@ -34,6 +34,16 @@ func (i *Instance) RegisterNewProcess(plugin <-chan Plugin) error {
 	return i.processes.Add(p)
 }
 
+// GetProcessID used to get plugin process ID
+func (i *Instance) GetProcessID(pluginName string) (ID, error) {
+	plugin, err := i.processes.Get(pluginName)
+	if err != nil {
+		return ID(0), err
+	}
+
+	return plugin.ID, nil
+}
+
 // Run used to start new subprocess
 func (i *Instance) Run(toWait int, name, command string, port int, args ...string) (<-chan Plugin, error) {
 	if i.processes.IsExist(name) {

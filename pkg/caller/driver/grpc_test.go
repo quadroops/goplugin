@@ -61,7 +61,7 @@ func TestPingErrorResponse(t *testing.T) {
 
 	resp, err := rpc.Ping()
 	assert.Error(t, err)
-	assert.True(t, errors.Is(err, errs.ErrProtocolGRPCResponse))
+	assert.True(t, errors.Is(err, errs.ErrPluginPing))
 	assert.Empty(t, resp)
 }
 
@@ -110,6 +110,6 @@ func TestGRPCErrorResponse(t *testing.T) {
 
 	resp, err := rpc.Exec("test.command", []byte("hello"))
 	assert.Error(t, err)
-	assert.True(t, errors.Is(err, errs.ErrProtocolGRPCResponse))
+	assert.True(t, errors.Is(err, errs.ErrPluginExec))
 	assert.Empty(t, resp)
 }

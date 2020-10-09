@@ -1,13 +1,16 @@
 package caller_test
 
 import (
+	"errors"
 	"testing"
 
+	"github.com/quadroops/goplugin/pkg/errs"
+
+	"github.com/quadroops/goplugin/pkg/caller"
 	"github.com/quadroops/goplugin/pkg/caller/mocks"
 	"github.com/quadroops/goplugin/pkg/executor"
 	"github.com/quadroops/goplugin/pkg/host"
 	"github.com/quadroops/goplugin/pkg/process"
-	"github.com/quadroops/goplugin/pkg/caller"
 
 	discoverDriver "github.com/quadroops/goplugin/pkg/discover/driver"
 	hostMock "github.com/quadroops/goplugin/pkg/host/mocks"
@@ -90,21 +93,21 @@ const (
 func TestPingSuccess(t *testing.T) {
 	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
 	assert.NoError(t, err)
-	
+
 	md5 := new(hostMock.MD5Checker)
 	md5.On("Parse", mock.Anything).Return("d41d8cd98f00b204e9800998ecf8427e", nil)
-	
+
 	h := host.New("host_1", toml, md5)
 	assert.NotNil(t, h)
-	
+
 	runner := new(processMock.Runner)
 	processes := new(processMock.ProcessesBuilder)
 	p := process.New(runner, processes)
-	
+
 	exec := executor.New(
 		executor.Register(h, p),
 	)
-	
+
 	container, err := exec.FromHost("host_1")
 	assert.NoError(t, err)
 
@@ -120,24 +123,57 @@ func TestPingSuccess(t *testing.T) {
 	assert.Equal(t, "pong", resp)
 }
 
-func TestExecSuccess(t *testing.T) {
+func TestPingError(t *testing.T) {
 	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
 	assert.NoError(t, err)
-	
+
 	md5 := new(hostMock.MD5Checker)
 	md5.On("Parse", mock.Anything).Return("d41d8cd98f00b204e9800998ecf8427e", nil)
-	
+
 	h := host.New("host_1", toml, md5)
 	assert.NotNil(t, h)
-	
+
 	runner := new(processMock.Runner)
 	processes := new(processMock.ProcessesBuilder)
 	p := process.New(runner, processes)
-	
+
 	exec := executor.New(
 		executor.Register(h, p),
 	)
-	
+
+	container, err := exec.FromHost("host_1")
+	assert.NoError(t, err)
+
+	mockCaller := new(mocks.Caller)
+	mockCaller.On("Ping").Once().Return("", errs.ErrPluginPing)
+
+	meta, err := container.GetPluginMeta("name_1")
+	assert.NoError(t, err)
+
+	plugin := caller.New(meta, mockCaller)
+	_, err = plugin.Ping()
+	assert.Error(t, err)
+	assert.True(t, errors.Is(err, errs.ErrPluginPing))
+}
+
+func TestExecSuccess(t *testing.T) {
+	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
+	assert.NoError(t, err)
+
+	md5 := new(hostMock.MD5Checker)
+	md5.On("Parse", mock.Anything).Return("d41d8cd98f00b204e9800998ecf8427e", nil)
+
+	h := host.New("host_1", toml, md5)
+	assert.NotNil(t, h)
+
+	runner := new(processMock.Runner)
+	processes := new(processMock.ProcessesBuilder)
+	p := process.New(runner, processes)
+
+	exec := executor.New(
+		executor.Register(h, p),
+	)
+
 	container, err := exec.FromHost("host_1")
 	assert.NoError(t, err)
 
@@ -151,4 +187,37 @@ func TestExecSuccess(t *testing.T) {
 	resp, err := plugin.Exec("test.action", []byte("hello"))
 	assert.NoError(t, err)
 	assert.Equal(t, []byte("world"), resp)
+}
+
+func TestExecError(t *testing.T) {
+	toml, err := discoverDriver.NewTomlParser().Parse([]byte(tomlContent))
+	assert.NoError(t, err)
+
+	md5 := new(hostMock.MD5Checker)
+	md5.On("Parse", mock.Anything).Return("d41d8cd98f00b204e9800998ecf8427e", nil)
+
+	h := host.New("host_1", toml, md5)
+	assert.NotNil(t, h)
+
+	runner := new(processMock.Runner)
+	processes := new(processMock.ProcessesBuilder)
+	p := process.New(runner, processes)
+
+	exec := executor.New(
+		executor.Register(h, p),
+	)
+
+	container, err := exec.FromHost("host_1")
+	assert.NoError(t, err)
+
+	mockCaller := new(mocks.Caller)
+	mockCaller.On("Exec", "test.action", []byte("hello")).Once().Return(nil, errs.ErrPluginExec)
+
+	meta, err := container.GetPluginMeta("name_1")
+	assert.NoError(t, err)
+
+	plugin := caller.New(meta, mockCaller)
+	_, err = plugin.Exec("test.action", []byte("hello"))
+	assert.Error(t, err)
+	assert.True(t, errors.Is(err, errs.ErrPluginExec))
 }

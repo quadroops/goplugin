@@ -2,6 +2,7 @@ package driver
 
 import (
 	"context"
+	"sync"
 
 	"github.com/quadroops/goplugin/pkg/errs"
 	"github.com/quadroops/goplugin/pkg/process"
@@ -11,6 +12,10 @@ import (
 type proccesses struct {
 	suppliers []rxgo.Supplier
 	registry  process.RegistryBuilder
+
+	// need to implement primitiv locking to make sure
+	// consistency
+	mutex sync.RWMutex
 }
 
 // NewProcesses used to create new instance of processes
@@ -20,6 +25,9 @@ func NewProcesses(registry process.RegistryBuilder) process.ProcessesBuilder {
 }
 
 func (p *proccesses) Get(name string) (process.Plugin, error) {
+	p.mutex.RLock()
+	defer p.mutex.RUnlock()
+
 	if len(p.suppliers) < 1 {
 		return process.Plugin{}, errs.ErrEmptyProcesses
 	}
@@ -56,7 +64,6 @@ func (p *proccesses) Get(name string) (process.Plugin, error) {
 			return process.Plugin{}, errs.ErrCastInterface
 		}
 
-		p.registry.Register(name, plugin)
 		return plugin, nil
 	}
 
@@ -64,11 +71,16 @@ func (p *proccesses) Get(name string) (process.Plugin, error) {
 }
 
 func (p *proccesses) Reset() {
+	p.mutex.Lock()
 	p.suppliers = []rxgo.Supplier{}
 	p.registry.Reset()
+	p.mutex.Unlock()
 }
 
 func (p *proccesses) Remove(name string) error {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
 	if len(p.suppliers) < 1 {
 		return errs.ErrEmptyProcesses
 	}
@@ -112,6 +124,9 @@ func (p *proccesses) Remove(name string) error {
 }
 
 func (p *proccesses) Add(plugin process.Plugin) error {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
 	if p.IsExist(plugin.Name) {
 		return errs.ErrPluginStarted
 	}

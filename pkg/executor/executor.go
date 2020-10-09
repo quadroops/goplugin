@@ -84,6 +84,11 @@ func (c *Container) Setup() error {
 	return nil
 }
 
+// GetAllPlugins used to retrive installed plugins from requested host
+func (c *Container) GetAllPlugins() host.Plugins {
+	return c.plugins
+}
+
 // IsInstalled used to check if current host has been installed or not
 func (c *Container) IsInstalled() bool {
 	return c.installed
