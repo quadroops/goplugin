@@ -1,5 +1,7 @@
 # quadroops/goplugin 
 
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/quadroops/goplugin)](https://pkg.go.dev/github.com/quadroops/goplugin)
+
 ## Introduction
 
 This package is a library to implement modular and pluggable architecture for application using
