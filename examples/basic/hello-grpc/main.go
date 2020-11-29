@@ -33,7 +33,9 @@ func main() {
 		goplugin.Map("hello", &hostAPluginHelloConf),
 	)
 
-	pluggable, err := goplugin.Register(mainHost).Install()
+	pluggable, err := goplugin.Register(mainHost).Install(&goplugin.InstallationOptions{
+		RetryTimeoutCaller: 3,
+	})
 	if err != nil {
 		panic(err)
 	}
