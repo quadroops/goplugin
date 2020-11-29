@@ -11,6 +11,7 @@ Golang's language.
 
 Please refer to our [Wiki](https://github.com/quadroops/goplugin/wiki)
 
+- [API Doc](https://pkg.go.dev/github.com/quadroops/goplugin)
 - [About GoPlugin](https://github.com/quadroops/goplugin/wiki)
 - [Installation & Usages](https://github.com/quadroops/goplugin/wiki/Installation-&-Usage)
 
