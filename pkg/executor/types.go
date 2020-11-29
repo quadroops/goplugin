@@ -15,11 +15,19 @@ type Registry struct {
 // Exec used main object of executor
 type Exec struct {
 	processes []rxgo.Supplier
+	options   *Options
+}
+
+// Options for now used only to store retry timeout which will
+// be used by Container
+type Options struct {
+	RetryTimeout int
 }
 
 // Container used as main object to start host's processes
 type Container struct {
-	Registry  *Registry
-	installed bool
-	plugins   host.Plugins
+	installed    bool
+	retryTimeout int
+	Registry     *Registry
+	plugins      host.Plugins
 }

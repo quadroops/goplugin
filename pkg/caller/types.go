@@ -19,6 +19,7 @@ type Caller interface {
 // Plugin is single plugin instance used to store
 // meta information and also caller activity
 type Plugin struct {
-	Meta        *host.Registry
-	transporter Caller
+	Meta         *host.Registry
+	transporter  Caller
+	retryTimeout int
 }

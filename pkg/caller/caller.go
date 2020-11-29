@@ -9,6 +9,9 @@ import (
 )
 
 var (
+	// ignoredErrors used to put a list of error types
+	// an error listed here, means, when that error happened
+	// it will not trigger any retry mechanism
 	ignoredErrors map[error]bool
 )
 
@@ -20,8 +23,8 @@ func init() {
 }
 
 // New used to create plugin's instance
-func New(meta *host.Registry, transporter Caller) *Plugin {
-	return &Plugin{meta, transporter}
+func New(meta *host.Registry, transporter Caller, retryTimeout int) *Plugin {
+	return &Plugin{meta, transporter, retryTimeout}
 }
 
 // Ping used to send ping request to plugin
@@ -30,7 +33,7 @@ func (p *Plugin) Ping() (string, error) {
 	if err != nil {
 		if _, exist := ignoredErrors[err]; !exist {
 			log.Printf("Retrying process error: %v", err)
-			time.Sleep(3 * time.Second)
+			time.Sleep(time.Duration(p.retryTimeout) * time.Second)
 			return p.Ping()
 		}
 
@@ -46,7 +49,7 @@ func (p *Plugin) Exec(cmdName string, payload []byte) ([]byte, error) {
 	if err != nil {
 		if _, exist := ignoredErrors[err]; !exist {
 			log.Printf("Retrying process error: %v", err)
-			time.Sleep(3 * time.Second)
+			time.Sleep(time.Duration(p.retryTimeout) * time.Second)
 			return p.Exec(cmdName, payload)
 		}
 

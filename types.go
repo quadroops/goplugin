@@ -33,6 +33,11 @@ type GoPlugin struct {
 // Option used to customize default objects
 type Option func(*GoPlugin)
 
+// InstallationOptions used to store any options on install
+type InstallationOptions struct {
+	RetryTimeoutCaller int
+}
+
 // PluginMapper used as registry to store plugin's config
 type PluginMapper map[string]*PluginConf
 

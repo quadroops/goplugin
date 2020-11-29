@@ -19,7 +19,7 @@ func Register(h *host.Builder, proc *process.Instance) *Registry {
 }
 
 // New used to create new instance, with parameter a list of registries
-func New(processes ...*Registry) *Exec {
+func New(options *Options, processes ...*Registry) *Exec {
 	var sources []rxgo.Supplier
 	if len(processes) >= 1 {
 		for _, p := range processes {
@@ -34,6 +34,7 @@ func New(processes ...*Registry) *Exec {
 
 	return &Exec{
 		processes: sources,
+		options:   options,
 	}
 }
 
@@ -64,8 +65,13 @@ func (e *Exec) FromHost(host string) (*Container, error) {
 	})
 
 	// setup host
-	err := container.Setup()
-	return &container, err
+	if err := container.Setup(); err != nil {
+		return nil, err
+	}
+
+	// setup retry timeout
+	container.retryTimeout = e.options.RetryTimeout
+	return &container, nil
 }
 
 // Setup used to check any available host and install it
@@ -145,7 +151,7 @@ func (c *Container) Get(name string, port int, builder caller.Builder) (*caller.
 		return nil, errs.ErrProtocolUnknown
 	}
 
-	return caller.New(pluginMeta, builder(pluginMeta.ProtocolType, port)), nil
+	return caller.New(pluginMeta, builder(pluginMeta.ProtocolType, port), c.retryTimeout), nil
 }
 
 // GetPluginMeta used to get plugin's metadata

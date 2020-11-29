@@ -23,7 +23,7 @@ func Register(hostPlugins ...*GoPlugin) *Registry {
 }
 
 // Install used to install available hostPlugins by calling Build
-func (r *Registry) Install() (*Registry, error) {
+func (r *Registry) Install(options *InstallationOptions) (*Registry, error) {
 	var hosts []*host.Builder
 	var registries []*executor.Registry
 
@@ -41,7 +41,9 @@ func (r *Registry) Install() (*Registry, error) {
 	}
 
 	r.hosts = hosts
-	r.exec = executor.New(registries...)
+	r.exec = executor.New(&executor.Options{
+		RetryTimeout: options.RetryTimeoutCaller,
+	}, registries...)
 
 	// setup all hosts
 	err := r.setup()

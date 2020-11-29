@@ -140,6 +140,9 @@ func TestExecNewSuccess(t *testing.T) {
 	p3 := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 		executor.Register(h2, p2),
 		executor.Register(h3, p3),
@@ -149,7 +152,11 @@ func TestExecNewSuccess(t *testing.T) {
 }
 
 func TestExecEmpty(t *testing.T) {
-	exec := executor.New()
+	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
+	)
 	assert.Equal(t, exec.ProcessLength(), 0)
 }
 
@@ -171,6 +178,9 @@ func TestExecFromHostSuccess(t *testing.T) {
 	p3 := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 		executor.Register(h2, p2),
 		executor.Register(h3, p3),
@@ -211,6 +221,9 @@ func TestRunSuccess(t *testing.T) {
 	p := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 	)
 
@@ -236,6 +249,9 @@ func TestRunNoPlugin(t *testing.T) {
 	p := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 	)
 
@@ -261,6 +277,9 @@ func TestGetPluginSuccess(t *testing.T) {
 	p := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 	)
 
@@ -291,6 +310,9 @@ func TestGetPluginNotFound(t *testing.T) {
 	p := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 	)
 
@@ -320,6 +342,9 @@ func TestGetPluginMetaSuccess(t *testing.T) {
 	p := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 	)
 
@@ -346,6 +371,9 @@ func TestGetPluginMetaNotFound(t *testing.T) {
 	p := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 	)
 
@@ -373,6 +401,9 @@ func TestAllowedProtocolFailed(t *testing.T) {
 	p := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 	)
 

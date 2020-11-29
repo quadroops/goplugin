@@ -105,6 +105,9 @@ func TestPingSuccess(t *testing.T) {
 	p := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 	)
 
@@ -117,7 +120,7 @@ func TestPingSuccess(t *testing.T) {
 	meta, err := container.GetPluginMeta("name_1")
 	assert.NoError(t, err)
 
-	plugin := caller.New(meta, mockCaller)
+	plugin := caller.New(meta, mockCaller, 3)
 	resp, err := plugin.Ping()
 	assert.NoError(t, err)
 	assert.Equal(t, "pong", resp)
@@ -138,6 +141,9 @@ func TestPingError(t *testing.T) {
 	p := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 	)
 
@@ -150,7 +156,7 @@ func TestPingError(t *testing.T) {
 	meta, err := container.GetPluginMeta("name_1")
 	assert.NoError(t, err)
 
-	plugin := caller.New(meta, mockCaller)
+	plugin := caller.New(meta, mockCaller, 3)
 	_, err = plugin.Ping()
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrPluginPing))
@@ -171,6 +177,9 @@ func TestExecSuccess(t *testing.T) {
 	p := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 	)
 
@@ -183,7 +192,7 @@ func TestExecSuccess(t *testing.T) {
 	meta, err := container.GetPluginMeta("name_1")
 	assert.NoError(t, err)
 
-	plugin := caller.New(meta, mockCaller)
+	plugin := caller.New(meta, mockCaller, 3)
 	resp, err := plugin.Exec("test.action", []byte("hello"))
 	assert.NoError(t, err)
 	assert.Equal(t, []byte("world"), resp)
@@ -204,6 +213,9 @@ func TestExecError(t *testing.T) {
 	p := process.New(runner, processes)
 
 	exec := executor.New(
+		&executor.Options{
+			RetryTimeout: 3,
+		},
 		executor.Register(h, p),
 	)
 
@@ -216,7 +228,7 @@ func TestExecError(t *testing.T) {
 	meta, err := container.GetPluginMeta("name_1")
 	assert.NoError(t, err)
 
-	plugin := caller.New(meta, mockCaller)
+	plugin := caller.New(meta, mockCaller, 3)
 	_, err = plugin.Exec("test.action", []byte("hello"))
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, errs.ErrPluginExec))

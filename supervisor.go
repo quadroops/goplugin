@@ -24,7 +24,8 @@ func SupervisorOptionInterval(interval int) PluginSupervisorOption {
 	}
 }
 
-// SupervisorOptionCustomDriver used to setup custom driver
+// SupervisorOptionCustomDriver used to setup custom driver, by default will
+// use current PluginSupervisor as driver
 func SupervisorOptionCustomDriver(drv supervisor.Driver) PluginSupervisorOption {
 	return func(s *PluginSupervisor) {
 		s.driver = drv
@@ -47,6 +48,7 @@ func Supervisor(pluggable *Registry, options ...PluginSupervisorOption) *PluginS
 }
 
 // Setup build a registry for host and their plugin and their plugin's caller
+// and creating new supervisor's instance
 func (s *PluginSupervisor) Setup(handlers ...supervisor.OnErrorHandler) error {
 	hostPlugins, err := s.pluggable.GetAllPlugins()
 	if err != nil {
