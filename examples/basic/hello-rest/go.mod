@@ -6,7 +6,7 @@ require (
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
-	github.com/quadroops/goplugin v1.0.0-alpha.3
+	github.com/quadroops/goplugin master 
 	github.com/reactivex/rxgo/v2 v2.1.0 // indirect
 	github.com/spf13/cobra v1.0.0 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect

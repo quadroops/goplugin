@@ -6,7 +6,7 @@ require (
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
-	github.com/quadroops/goplugin v1.0.0-alpha.2
+	github.com/quadroops/goplugin master 
 	github.com/reactivex/rxgo/v2 v2.1.0 // indirect
 	github.com/spf13/cobra v1.0.0 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
@@ -21,5 +21,3 @@ require (
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 )
-
-replace github.com/quadroops/goplugin => /home/hiraqdev/projects/personal/quadroops/goplugin
