@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2020-11-01
+
+### Changed
+- Refactor `pkg/caller`.  Make configurable timeout
+- Refactor factory, to adding new configurable options for caller's timeout
+- Retest & recheck supervisor's flows & processes
+- Retest & recheck all available `pkg` domains
+- Update example
+- Update readme
+
 ## [1.0.0-alpha.3] - 2020-10-09
 ### Removed
 - Remove watch as unused api function
